@@ -1,23 +1,19 @@
-using BoardGameNight.Data;
 using BoardGameNight.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-
-namespace BoardGameNight.Controllers;
 
 public class BordspelController : Controller
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IBordspelRepository _bordspelRepository;
 
-    public BordspelController(ApplicationDbContext context)
+    public BordspelController(IBordspelRepository bordspelRepository)
     {
-        _context = context;
+        _bordspelRepository = bordspelRepository;
     }
 
     // GET: Bordspel
     public async Task<IActionResult> Index()
     {
-        return View(await _context.Bordspellen.ToListAsync());
+        return View(await _bordspelRepository.GetAllAsync());
     }
 
     // GET: Bordspel/Details/5
@@ -28,8 +24,7 @@ public class BordspelController : Controller
             return NotFound();
         }
 
-        var bordspel = await _context.Bordspellen
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var bordspel = await _bordspelRepository.GetByIdAsync(id.Value);
         if (bordspel == null)
         {
             return NotFound();
@@ -44,19 +39,25 @@ public class BordspelController : Controller
         return View();
     }
 
-    // POST: Bordspel/Create
+// POST: Bordspel/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,Naam,Beschrijving,Genre,Is18Plus,Foto,SoortSpel")] Bordspel bordspel)
+    public async Task<IActionResult> Create(
+        [Bind("Id,Naam,Beschrijving,Genre,Is18Plus,Foto,SoortSpel")] Bordspel bordspel)
     {
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
         {
-            _context.Add(bordspel);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-        return View(bordspel);
-    }
+            var errors = ModelState.Values.SelectMany(v => v.Errors);
+            foreach (var error in errors)
+            {
+                Console.WriteLine(error.ErrorMessage);
+            }
 
-    // Andere acties (Edit, Delete)...
+            // Return the view with the model including the validation errors
+            return View(bordspel);
+        }
+
+        await _bordspelRepository.CreateAsync(bordspel);
+        return RedirectToAction(nameof(Index));
+    }
 }

@@ -1,7 +1,10 @@
 using BoardGameNight.Data;
+using BoardGameNight.Repositories.Implementations;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddScoped<IBordspelRepository, BordspelRepository>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
