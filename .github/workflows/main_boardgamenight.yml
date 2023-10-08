@@ -53,6 +53,9 @@ jobs:
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_6CC4F9FC83A3470AAA19FE8FD4C0D3F5 }}
           package: .
 
+      - name: Install EF Core tools
+        run: dotnet tool install --global dotnet-ef
+
       - name: EF Core Database Update
         run: dotnet ef database update --project BoardGameNight/BoardGameNight.csproj --startup-project BoardGameNight/BoardGameNight.csproj
         env:
