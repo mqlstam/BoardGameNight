@@ -1,6 +1,3 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
 name: Build and deploy ASP.Net Core app to Azure Web App - BoardGameNight
 
 on:
@@ -55,3 +52,8 @@ jobs:
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_6CC4F9FC83A3470AAA19FE8FD4C0D3F5 }}
           package: .
+
+      - name: EF Core Database Update
+        run: dotnet ef database update --project BoardGameNight/BoardGameNight.csproj --startup-project BoardGameNight/BoardGameNight.csproj
+        env:
+          ConnectionStrings__DefaultConnection: ${{ secrets.DEFAULT_CONNECTION }}
