@@ -1,63 +1,32 @@
-name: Build and deploy ASP.Net Core app to Azure Web App - BoardGameNight
+deploy:
+  runs-on: windows-latest
+  needs: build
+  environment:
+    name: 'Production'
+    url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-jobs:
-  build:
-    runs-on: windows-latest
+    - name: Download artifact from build job
+      uses: actions/download-artifact@v2
+      with:
+        name: .net-app
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Deploy to Azure Web App
+      id: deploy-to-webapp
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'BoardGameNight'
+        slot-name: 'Production'
+        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_6CC4F9FC83A3470AAA19FE8FD4C0D3F5 }}
+        package: .
+        
+    - name: Install EF Core tools
+      run: dotnet tool install --global dotnet-ef
 
-      - name: Set up .NET Core
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '7.x'
-          include-prerelease: true
-
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
-
-      - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
-
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v2
-        with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
-
-  deploy:
-    runs-on: windows-latest
-    needs: build
-    environment:
-      name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v2
-        with:
-          name: .net-app
-
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: 'BoardGameNight'
-          slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_6CC4F9FC83A3470AAA19FE8FD4C0D3F5 }}
-          package: .
-          
-      - name: Install EF Core tools
-        run: dotnet tool install --global dotnet-ef
-
-      - name: EF Core Database Update
-        run: dotnet ef database update --project BoardGameNight.csproj --startup-project BoardGameNight.csproj
-        env:
-          ConnectionStrings__DefaultConnection: ${{ secrets.DEFAULT_CONNECTION }}
+    - name: EF Core Database Update
+      run: dotnet ef database update --project ./BoardGameNight/BoardGameNight.csproj --startup-project ./BoardGameNight/BoardGameNight.csproj
+      env:
+        ConnectionStrings__DefaultConnection: ${{ secrets.DEFAULT_CONNECTION }}
