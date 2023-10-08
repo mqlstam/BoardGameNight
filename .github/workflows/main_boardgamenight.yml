@@ -60,7 +60,10 @@ jobs:
       - name: Install EF Core tools
         run: dotnet tool install --global dotnet-ef
         
+      - name: List directory contents
+        run: ls ./BoardGameNight
+        
       - name: EF Core Database Update
-        run: dotnet ef database update --project ./BoardGameNight.csproj --startup-project ./BoardGameNight.csproj
+        run: dotnet ef database update --project ./BoardGameNight/BoardGameNight.csproj --startup-project ./BoardGameNight/BoardGameNight.csproj
         env:
           ConnectionStrings__DefaultConnection: ${{ secrets.DEFAULT_CONNECTION }}
