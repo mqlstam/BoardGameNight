@@ -1,0 +1,13 @@
+@model BoardGameNight.Models.Eten
+
+@{
+    ViewData["Title"] = "Eten Details";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<h2>@Model.Naam</h2>
+<p>Is vegetarisch: @Model.IsVegetarisch</p>
+<p>Is lactosevrij: @Model.IsLactosevrij</p>
+<p>Is notenvrij: @Model.IsNotenvrij</p>
+<p>Is alcoholvrij: @Model.IsAlcoholvrij</p>

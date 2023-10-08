@@ -1,0 +1,13 @@
+@model BoardGameNight.Models.Persoon
+
+@{
+    ViewData["Title"] = "Persoon Details";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<h2>@Model.Naam</h2>
+<p>Email: @Model.Email</p>
+<p>Geslacht: @Model.Geslacht</p>
+<p>Adres: @Model.Adres</p>
+<p>Geboortedatum: @Model.Geboortedatum</p>

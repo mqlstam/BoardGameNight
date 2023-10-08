@@ -1,0 +1,19 @@
+@model BoardGameNight.Models.Review
+
+@{
+    ViewData["Title"] = "Edit Review";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form>
+    <input asp-for="Id" type="hidden">
+
+    <label for="Score">Score</label>
+    <input asp-for="Score" type="number">
+
+    <label for="Tekst">Tekst</label>
+    <input asp-for="Tekst" type="text">
+
+    <button type="submit">Update</button>
+</form>

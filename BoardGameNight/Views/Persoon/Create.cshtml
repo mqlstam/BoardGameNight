@@ -1,0 +1,26 @@
+@model BoardGameNight.Models.Persoon
+
+@{
+    ViewData["Title"] = "Create Persoon";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="Create">
+    <label for="Naam">Naam</label>
+    <input asp-for="Naam" type="text">
+
+    <label for="Email">Email</label>
+    <input asp-for="Email" type="email">
+
+    <label for="Geslacht">Geslacht</label>
+    <input asp-for="Geslacht" type="text">
+
+    <label for="Adres">Adres</label>
+    <input asp-for="Adres" type="text">
+
+    <label for="Geboortedatum">Geboortedatum</label>
+    <input asp-for="Geboortedatum" type="date">
+
+    <button type="submit">Create</button>
+</form>

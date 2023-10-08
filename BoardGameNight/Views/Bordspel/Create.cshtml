@@ -1,0 +1,23 @@
+@model BoardGameNight.Models.Bordspel
+
+@{
+    ViewData["Title"] = "Create Bordspel";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="Create">
+    <label for="Naam">Naam</label>
+    <input asp-for="Naam" type="text">
+
+    <label for="Beschrijving">Beschrijving</label>
+    <textarea asp-for="Beschrijving"></textarea>
+
+    <label for="Genre">Genre</label>
+    <input asp-for="Genre" type="text">
+
+    <label for="Is18Plus">Is 18+</label>
+    <input asp-for="Is18Plus" type="checkbox">
+
+    <button type="submit">Create</button>
+</form>

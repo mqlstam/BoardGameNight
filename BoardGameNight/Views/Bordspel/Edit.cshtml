@@ -1,0 +1,25 @@
+@model BoardGameNight.Models.Bordspel
+
+@{
+    ViewData["Title"] = "Edit Bordspel";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="Edit">
+    <input asp-for="Id" type="hidden">
+
+    <label for="Naam">Naam</label>
+    <input asp-for="Naam" type="text">
+
+    <label for="Beschrijving">Beschrijving</label>
+    <textarea asp-for="Beschrijving"></textarea>
+
+    <label for="Genre">Genre</label>
+    <input asp-for="Genre" type="text">
+
+    <label for="Is18Plus">Is 18+</label>
+    <input asp-for="Is18Plus" type="checkbox">
+
+    <button type="submit">Update</button>
+</form>

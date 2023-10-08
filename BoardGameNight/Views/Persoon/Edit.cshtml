@@ -1,0 +1,26 @@
+@model BoardGameNight.Models.Persoon
+
+@{
+    ViewData["Title"] = "Edit Persoon";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="Edit">
+<input asp-for="Id" type="hidden">
+
+<label for="Naam">Naam</label>
+<input asp-for="Naam" type="text">
+
+<label for="Email">Email</label>
+<input asp-for="Email" type="email">
+
+<label for="Geslacht">Geslacht</label>
+<input asp-for="Geslacht" type="text">
+
+<label for="Adres">Adres</label>
+<input asp-for="Adres" type="text">
+
+<label for="Geboortedatum">Geboortedatum</label>
+<input asp-for="Geboortedatum" type="date">
+</form>

@@ -1,0 +1,19 @@
+@model BoardGameNight.Models.Review
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="Create">
+    <div class="form-group">
+        <label asp-for="Score" class="control-label">Score</label>
+        <input asp-for="Score" class="form-control" type="number">
+        <span asp-validation-for="Score" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Tekst" class="control-label">Review Text</label>
+        <textarea asp-for="Tekst" class="form-control"></textarea>
+        <span asp-validation-for="Tekst" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>

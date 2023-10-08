@@ -1,0 +1,12 @@
+@model BoardGameNight.Models.Bordspel
+
+@{
+    ViewData["Title"] = "Bordspel Details";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<h2>@Model.Naam</h2>
+<p>@Model.Beschrijving</p>
+<p>Genre: @Model.Genre</p>
+<p>Is 18+: @Model.Is18Plus</p>

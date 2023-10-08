@@ -1,0 +1,28 @@
+@model BoardGameNight.Models.Eten
+
+@{
+    ViewData["Title"] = "Edit Eten";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="Edit">
+    <input asp-for="Id" type="hidden">
+
+    <label for="Naam">Naam</label>
+    <input asp-for="Naam" type="text">
+
+    <label for="IsVegetarisch">Is Vegetarisch</label>
+    <input asp-for="IsVegetarisch" type="checkbox">
+
+    <label for="IsLactosevrij">Is Lactosevrij</label>
+    <input asp-for="IsLactosevrij" type="checkbox">
+
+    <label for="IsNotenvrij">Is Notenvrij</label>
+    <input asp-for="IsNotenvrij" type="checkbox">
+
+    <label for="IsAlcoholvrij">Is Alcoholvrij</label>
+    <input asp-for="IsAlcoholvrij" type="checkbox">
+
+    <button type="submit">Update</button>
+</form>
