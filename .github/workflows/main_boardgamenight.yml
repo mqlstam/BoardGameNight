@@ -12,9 +12,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
+      
       - name: Print directory structure
-        run: dir /s
+        run: |
+          cmd /c "dir /s"
 
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v1
