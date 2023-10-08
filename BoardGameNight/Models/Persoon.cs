@@ -15,4 +15,5 @@ public class Persoon
     public ICollection<Bordspellenavond> GeorganiseerdeAvonden { get; set; }
     public ICollection<Bordspellenavond> DeelgenomenAvonden { get; set; }
     public ICollection<Review> Reviews { get; set; }
+    
 }
