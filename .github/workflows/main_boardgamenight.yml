@@ -11,11 +11,8 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v2
-      
-      - name: Print directory structure
-        run: |
-          cmd /c "dir /s"
+      - name: Checkout code
+        uses: actions/checkout@v2
 
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v1
@@ -56,14 +53,11 @@ jobs:
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_6CC4F9FC83A3470AAA19FE8FD4C0D3F5 }}
           package: .
-
+          
       - name: Install EF Core tools
         run: dotnet tool install --global dotnet-ef
-        
-      - name: List directory contents
-        run: ls
-        
+
       - name: EF Core Database Update
-        run: dotnet ef database update --project ./BoardGameNight.csproj --startup-project ./BoardGameNight.csproj
+        run: dotnet ef database update --project BoardGameNight.csproj --startup-project BoardGameNight.csproj
         env:
           ConnectionStrings__DefaultConnection: ${{ secrets.DEFAULT_CONNECTION }}
