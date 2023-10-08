@@ -22,6 +22,7 @@ public class ApplicationDbContext : DbContext
     modelBuilder.Entity<Eten>().ToTable("Eten");
     modelBuilder.Entity<Persoon>().ToTable("Persoon");
     modelBuilder.Entity<Review>().ToTable("Review");
+    
 
     // Relatie tussen Persoon en Bordspellenavond (Organisator)
     modelBuilder.Entity<Bordspellenavond>()

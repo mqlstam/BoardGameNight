@@ -6,7 +6,29 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<h2>@Model.Naam</h2>
-<p>@Model.Beschrijving</p>
-<p>Genre: @Model.Genre</p>
-<p>Is 18+: @Model.Is18Plus</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Naam</th>
+            <th>Beschrijving</th>
+            <th>Genre</th>
+            <th>Is 18+</th>
+            <th>Soort Spel</th>
+            <th>Foto URL</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>@Model.Naam</td>
+            <td>@Model.Beschrijving</td>
+            <td>@Model.Genre</td>
+            <td>@(Model.Is18Plus ? "Yes" : "No")</td>
+            <td>@Model.SoortSpel</td>
+            <td><img src="@Model.FotoUrl" alt="Foto" width="100" /></td>
+        </tr>
+    </tbody>
+</table>
+
+<a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+<a asp-action="Delete" asp-route-id="@Model.Id">Delete</a> |
+<a asp-action="Index">Back to List</a>

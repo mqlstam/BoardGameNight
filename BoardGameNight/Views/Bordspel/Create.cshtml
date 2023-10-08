@@ -1,23 +1,50 @@
 @model BoardGameNight.Models.Bordspel
 
-@{
-    ViewData["Title"] = "Create Bordspel";
-}
+<h2 class="mb-4">Create New Board Game</h2>
 
-<h1>@ViewData["Title"]</h1>
-
-<form asp-action="Create">
-    <label for="Naam">Naam</label>
-    <input asp-for="Naam" type="text">
-
-    <label for="Beschrijving">Beschrijving</label>
-    <textarea asp-for="Beschrijving"></textarea>
-
-    <label for="Genre">Genre</label>
-    <input asp-for="Genre" type="text">
-
-    <label for="Is18Plus">Is 18+</label>
-    <input asp-for="Is18Plus" type="checkbox">
-
-    <button type="submit">Create</button>
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label asp-for="Naam"></label>
+        <input asp-for="Naam" class="form-control" placeholder="Enter game name" />
+        <span asp-validation-for="Naam" class="text-danger"></span>
+    </div>
+    
+    <div class="form-group">
+        <label asp-for="Beschrijving"></label>
+        <textarea asp-for="Beschrijving" class="form-control" rows="3" placeholder="Enter game description"></textarea>
+        <span asp-validation-for="Beschrijving" class="text-danger"></span>
+    </div>
+    
+    <div class="form-group">
+        <label asp-for="Genre"></label>
+        <input asp-for="Genre" class="form-control" placeholder="Enter genre" />
+        <span asp-validation-for="Genre" class="text-danger"></span>
+    </div>
+    
+    <div class="form-check mb-3">
+        <input asp-for="Is18Plus" class="form-check-input" type="checkbox" />
+        <label asp-for="Is18Plus" class="form-check-label"></label>
+        <span asp-validation-for="Is18Plus" class="text-danger"></span>
+    </div>
+    
+    <div class="form-group">
+        <label for="Foto">Game Image</label>
+        <input id="Foto" name="Foto" type="file" class="form-control-file" />
+    </div>
+    
+    <div class="form-group">
+        <label asp-for="SoortSpel"></label>
+        <input asp-for="SoortSpel" class="form-control" placeholder="Enter game type" />
+        <span asp-validation-for="SoortSpel" class="text-danger"></span>
+    </div>
+    
+    <button type="submit" class="btn btn-primary mt-3">Create</button>
 </form>
+
+<div class="mt-4">
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

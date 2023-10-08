@@ -1,14 +1,21 @@
 using BoardGameNight.Models;
 using Microsoft.AspNetCore.Mvc;
+using BoardGameNight.Services;
 
 public class BordspelController : Controller
 {
     private readonly IBordspelRepository _bordspelRepository;
+    private readonly BlobStorageService _blobStorageService;
+    private readonly ILogger<BordspelController> _logger;
 
-    public BordspelController(IBordspelRepository bordspelRepository)
+    public BordspelController(IBordspelRepository bordspelRepository, BlobStorageService blobStorageService,
+        ILogger<BordspelController> logger)
     {
         _bordspelRepository = bordspelRepository;
+        _blobStorageService = blobStorageService;
+        _logger = logger;
     }
+
 
     // GET: Bordspel
     public async Task<IActionResult> Index()
@@ -39,25 +46,37 @@ public class BordspelController : Controller
         return View();
     }
 
-// POST: Bordspel/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(
-        [Bind("Id,Naam,Beschrijving,Genre,Is18Plus,Foto,SoortSpel")] Bordspel bordspel)
+    public async Task<IActionResult> Create([Bind("Id,Naam,Beschrijving,Genre,Is18Plus,SoortSpel")] Bordspel bordspel,
+        IFormFile foto)
     {
-        if (!ModelState.IsValid)
+        if (ModelState.IsValid)
         {
-            var errors = ModelState.Values.SelectMany(v => v.Errors);
-            foreach (var error in errors)
+            try
             {
-                Console.WriteLine(error.ErrorMessage);
-            }
+                if (foto != null && foto.Length > 0)
+                {
+                    var fotoUrl = await _blobStorageService.UploadImage(foto, "imagesbordspellen");
+                    bordspel.FotoUrl = fotoUrl;
+                }
 
-            // Return the view with the model including the validation errors
-            return View(bordspel);
+                await _bordspelRepository.CreateAsync(bordspel);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                _logger.LogError(ex, "Error creating bordspel");
+            }
         }
 
-        await _bordspelRepository.CreateAsync(bordspel);
-        return RedirectToAction(nameof(Index));
+        var errors = ModelState.Values.SelectMany(v => v.Errors);
+        foreach (var error in errors)
+        {
+            _logger.LogError("Model validation error: {0}", error.ErrorMessage);
+        }
+
+        return View(bordspel);
     }
 }

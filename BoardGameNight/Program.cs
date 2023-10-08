@@ -1,15 +1,23 @@
 using BoardGameNight.Data;
 using BoardGameNight.Repositories.Implementations;
+using BoardGameNight.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add services to the DI container.
 builder.Services.AddScoped<IBordspelRepository, BordspelRepository>();
+builder.Services.AddScoped<BlobStorageService>(serviceProvider =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("BlobStorageConnection");
 
-// Add services to the container.
+    return new BlobStorageService(connectionString, serviceProvider.GetRequiredService<ILogger<BlobStorageService>>());
+});
+
+// Add controllers with views.
 builder.Services.AddControllersWithViews();
 
-// Configuring DbContext
+// Configuring DbContext.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 

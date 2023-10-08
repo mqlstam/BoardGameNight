@@ -1,0 +1,35 @@
+@model IEnumerable<BoardGameNight.Models.Bordspel>
+
+<h1>Bordspellen</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Naam</th>
+            <th>Beschrijving</th>
+            <th>Genre</th>
+            <th>Is 18+</th>
+            <th>Soort Spel</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Naam</td>
+            <td>@item.Beschrijving</td>
+            <td>@item.Genre</td>
+            <td>@(item.Is18Plus ? "Yes" : "No")</td>
+            <td>@item.SoortSpel</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<a asp-action="Create">Create New Bordspel</a>
