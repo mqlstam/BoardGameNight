@@ -66,7 +66,7 @@ jobs:
       - name: List directory contents
         run: ls
         
-        - name: EF Core Database Update
-  run: dotnet ef database update --project ./BoardGameNight/BoardGameNight.csproj --startup-project ./BoardGameNight/BoardGameNight.csproj
-  env:
-    ConnectionStrings__DefaultConnection: ${{ secrets.DEFAULT_CONNECTION }}
+      - name: EF Core Database Update
+        run: dotnet ef database update --project ./BoardGameNight/BoardGameNight.csproj --startup-project ./BoardGameNight/BoardGameNight.csproj
+        env:
+          ConnectionStrings__DefaultConnection: ${{ secrets.DEFAULT_CONNECTION }}
