@@ -29,7 +29,7 @@ public class ApplicationDbContext : DbContext
         .WithMany(p => p.GeorganiseerdeAvonden)
         .HasForeignKey(b => b.OrganisatorId);
 
-    // Many-to-Many relatie tussen Persoon en Bordspellenavond (Deelnemers)
+// Many-to-Many relatie tussen Persoon en Bordspellenavond (Deelnemers)
     modelBuilder.Entity<Bordspellenavond>()
         .HasMany(b => b.Deelnemers)
         .WithMany(p => p.DeelgenomenAvonden)
@@ -39,12 +39,12 @@ public class ApplicationDbContext : DbContext
                 .HasOne<Persoon>()
                 .WithMany()
                 .HasForeignKey("PersoonId")
-                .OnDelete(DeleteBehavior.Cascade),
+                .OnDelete(DeleteBehavior.NoAction), // Verander van Cascade naar NoAction
             j => j
                 .HasOne<Bordspellenavond>()
                 .WithMany()
                 .HasForeignKey("BordspellenavondId")
-                .OnDelete(DeleteBehavior.Cascade)
+                .OnDelete(DeleteBehavior.NoAction) // Verander van Cascade naar NoAction
         );
 
     // Many-to-Many relatie tussen Bordspellenavond en Bordspel
@@ -69,13 +69,15 @@ public class ApplicationDbContext : DbContext
     modelBuilder.Entity<Bordspellenavond>()
         .HasMany(b => b.Reviews)
         .WithOne(r => r.Bordspellenavond)
-        .HasForeignKey(r => r.BordspellenavondId);
+        .HasForeignKey(r => r.BordspellenavondId)
+        .OnDelete(DeleteBehavior.NoAction);
 
     // One-to-Many relatie tussen Persoon en Review
     modelBuilder.Entity<Persoon>()
         .HasMany(p => p.Reviews)
         .WithOne(r => r.Persoon)
-        .HasForeignKey(r => r.PersoonId);
+        .HasForeignKey(r => r.PersoonId)
+        .OnDelete(DeleteBehavior.NoAction);
 
     // One-to-Many relatie tussen Bordspellenavond en Eten
     modelBuilder.Entity<Bordspellenavond>()
@@ -85,7 +87,7 @@ public class ApplicationDbContext : DbContext
 }  
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer("Server=tcp:boardgamedatabase.database.windows.net,1433;Initial Catalog=BoardGameDatabase;Persist Security Info=False;User ID=lemigie;Password={your_password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+        optionsBuilder.UseSqlServer("Server=tcp:boardgamedatabase.database.windows.net,1433;Initial Catalog=BoardGameDatabase;Persist Security Info=False;User ID=lemigie;Password=Mikzakker1;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
     }
     
     
