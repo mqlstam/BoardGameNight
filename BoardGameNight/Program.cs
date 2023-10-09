@@ -1,23 +1,26 @@
+using BoardGameNight;
+using BoardGameNight.Configurations;
 using BoardGameNight.Data;
 using BoardGameNight.Repositories.Implementations;
 using BoardGameNight.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the DI container.
+// Add services to the container.
 builder.Services.AddScoped<IBordspelRepository, BordspelRepository>();
-builder.Services.AddScoped<BlobStorageService>(serviceProvider =>
-{
-    var connectionString = builder.Configuration.GetConnectionString("BlobStorageConnection");
+builder.Services.AddScoped<BlobStorageService>();
+builder.Services.Configure<BlobStorageSettings>(builder.Configuration.GetSection("BlobStorageSettings"));
 
-    return new BlobStorageService(connectionString, serviceProvider.GetRequiredService<ILogger<BlobStorageService>>());
-});
+// Add the global exception handler
+builder.Services.AddScoped<GlobalExceptionHandler>();
 
-// Add controllers with views.
-builder.Services.AddControllersWithViews();
+// Apply the global exception handler to all actions
+builder.Services.AddControllersWithViews(options =>
+    options.Filters.Add(new ServiceFilterAttribute(typeof(GlobalExceptionHandler))));
 
-// Configuring DbContext.
+// Add DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 

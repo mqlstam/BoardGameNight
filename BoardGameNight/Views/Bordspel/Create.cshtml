@@ -5,39 +5,40 @@
 <form asp-action="Create" method="post" enctype="multipart/form-data">
     <div class="form-group">
         <label asp-for="Naam"></label>
-        <input asp-for="Naam" class="form-control" placeholder="Enter game name" />
+        <input asp-for="Naam" class="form-control" placeholder="Enter game name"/>
         <span asp-validation-for="Naam" class="text-danger"></span>
     </div>
-    
+
     <div class="form-group">
         <label asp-for="Beschrijving"></label>
         <textarea asp-for="Beschrijving" class="form-control" rows="3" placeholder="Enter game description"></textarea>
         <span asp-validation-for="Beschrijving" class="text-danger"></span>
     </div>
-    
+
     <div class="form-group">
         <label asp-for="Genre"></label>
-        <input asp-for="Genre" class="form-control" placeholder="Enter genre" />
+        <input asp-for="Genre" class="form-control" placeholder="Enter genre"/>
         <span asp-validation-for="Genre" class="text-danger"></span>
     </div>
-    
+
     <div class="form-check mb-3">
-        <input asp-for="Is18Plus" class="form-check-input" type="checkbox" />
+        <input asp-for="Is18Plus" class="form-check-input" type="checkbox"/>
         <label asp-for="Is18Plus" class="form-check-label"></label>
         <span asp-validation-for="Is18Plus" class="text-danger"></span>
     </div>
-    
-    <div class="form-group">
-        <label for="Foto">Game Image</label>
-        <input id="Foto" name="Foto" type="file" class="form-control-file" />
-    </div>
-    
+
+<div class="form-group">
+    <label for="Foto">Game Image</label>
+    <input id="Foto" name="Foto" type="file" class="form-control-file"/>
+    <span class="text-danger">@ViewData.ModelState["Foto"]?.Errors.FirstOrDefault()?.ErrorMessage</span>
+</div>
+
     <div class="form-group">
         <label asp-for="SoortSpel"></label>
-        <input asp-for="SoortSpel" class="form-control" placeholder="Enter game type" />
+        <input asp-for="SoortSpel" class="form-control" placeholder="Enter game type"/>
         <span asp-validation-for="SoortSpel" class="text-danger"></span>
     </div>
-    
+
     <button type="submit" class="btn btn-primary mt-3">Create</button>
 </form>
 
@@ -47,4 +48,22 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        document.getElementById('Foto').addEventListener('change', function (e) {
+            // Maximum file size (2MB)
+            var maxSize = 2 * 1024 * 1024;
+
+            // Allowed file types
+            var allowedFileTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+
+            if (this.files[0].size > maxSize) {
+                alert('File size should not exceed 2MB');
+                this.value = null; // Clear the file input
+            } else if (!allowedFileTypes.includes(this.files[0].type)) {
+                alert('Invalid file type. Only jpeg, jpg, png, and gif are allowed');
+                this.value = null; // Clear the file input
+            }
+        });
+    </script>
 }

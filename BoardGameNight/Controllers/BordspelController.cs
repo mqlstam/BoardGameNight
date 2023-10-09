@@ -2,6 +2,8 @@ using BoardGameNight.Models;
 using Microsoft.AspNetCore.Mvc;
 using BoardGameNight.Services;
 
+[Route("bordspel")]
+
 public class BordspelController : Controller
 {
     private readonly IBordspelRepository _bordspelRepository;
@@ -24,6 +26,7 @@ public class BordspelController : Controller
     }
 
     // GET: Bordspel/Details/5
+    [HttpGet("details/{id:int}")]
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
@@ -41,6 +44,7 @@ public class BordspelController : Controller
     }
 
 // GET: Bordspel/Edit/5
+[HttpGet("edit/{id:int}")]
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null)
@@ -56,11 +60,12 @@ public class BordspelController : Controller
 
         return View(bordspel);
     }
+    
+    
 
-    [HttpPost]
+    [HttpPost("edit/{id:int}")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id,
-        [Bind("Id,Naam,Beschrijving,Genre,Is18Plus,SoortSpel")] Bordspel bordspel, IFormFile foto)
+    public async Task<IActionResult> Edit(int id, Bordspel bordspel, IFormFile foto = null)
     {
         if (id != bordspel.Id)
         {
@@ -71,13 +76,29 @@ public class BordspelController : Controller
         {
             try
             {
+                // Load the existing entity from the database
+                var existingBordspel = await _bordspelRepository.GetByIdAsync(id);
+
+                if (existingBordspel == null)
+                {
+                    return NotFound();
+                }
+
+                // Update only the fields that are being edited
+                existingBordspel.Naam = bordspel.Naam;
+                existingBordspel.Beschrijving = bordspel.Beschrijving;
+                existingBordspel.Genre = bordspel.Genre;
+                existingBordspel.Is18Plus = bordspel.Is18Plus;
+                existingBordspel.SoortSpel = bordspel.SoortSpel;
+
+                // Only upload new image if a file has been provided
                 if (foto != null && foto.Length > 0)
                 {
                     var fotoUrl = await _blobStorageService.UploadImage(foto, "imagesbordspellen");
-                    bordspel.FotoUrl = fotoUrl;
+                    existingBordspel.FotoUrl = fotoUrl;
                 }
 
-                await _bordspelRepository.UpdateAsync(bordspel);
+                await _bordspelRepository.UpdateAsync(existingBordspel);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -97,32 +118,47 @@ public class BordspelController : Controller
     }
 
     // GET: Bordspel/Create
+    [HttpGet("create")]
     public IActionResult Create()
     {
         return View();
     }
-
-    [HttpPost]
+    
+    [HttpGet("test")]
+    public IActionResult TestExceptionHandler()
+    {
+        throw new NotImplementedException("This is a test exception");
+    }
+    
+    // POST: Bordspel/Create
+    [HttpPost("create")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,Naam,Beschrijving,Genre,Is18Plus,SoortSpel")] Bordspel bordspel,
-        IFormFile foto)
+    public async Task<IActionResult> Create(Bordspel bordspel, IFormFile foto)
     {
         if (ModelState.IsValid)
         {
             try
             {
-                if (foto != null && foto.Length > 0)
+                if (foto == null || foto.Length == 0)
                 {
-                    var fotoUrl = await _blobStorageService.UploadImage(foto, "imagesbordspellen");
-                    bordspel.FotoUrl = fotoUrl;
+                    ModelState.AddModelError("Foto", "The foto field is required.");
+                    return View(bordspel);
                 }
+
+                var fotoUrl = await _blobStorageService.UploadImage(foto, "imagesbordspellen");
+                bordspel.FotoUrl = fotoUrl;
 
                 await _bordspelRepository.CreateAsync(bordspel);
                 return RedirectToAction(nameof(Index));
             }
+            catch (ArgumentException ex)
+            {
+                ModelState.AddModelError("Foto", ex.Message);
+                _logger.LogError(ex, "Error uploading image");
+            }
             catch (Exception ex)
             {
-                // Log the exception
+                ModelState.AddModelError(string.Empty, "An error occurred while saving the game. Please try again later.");
                 _logger.LogError(ex, "Error creating bordspel");
             }
         }
@@ -135,8 +171,9 @@ public class BordspelController : Controller
 
         return View(bordspel);
     }
-
+    
     // GET: Bordspel/Delete/5
+    [HttpGet("delete/{id:int}")]
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null)
