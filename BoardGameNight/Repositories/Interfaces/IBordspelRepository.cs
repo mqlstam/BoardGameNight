@@ -9,4 +9,5 @@ public interface IBordspelRepository
     Task CreateAsync(Bordspel bordspel);
     Task UpdateAsync(Bordspel bordspel);
     Task DeleteAsync(int id);
+    
 }
