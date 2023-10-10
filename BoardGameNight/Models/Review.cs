@@ -8,7 +8,7 @@ public class Review
 
     // Navigational properties
     public Persoon Persoon { get; set; }
-    public int PersoonId { get; set; }
+    public string PersoonId { get; set; }
     public Bordspellenavond Bordspellenavond { get; set; }
     public int BordspellenavondId { get; set; }
 }

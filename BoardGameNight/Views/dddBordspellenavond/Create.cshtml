@@ -1,0 +1,21 @@
+@model BoardGameNight.Models.Bordspellenavond
+
+@{
+    ViewData["Title"] = "Create Bordspellenavond";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="Create">
+
+    <label for="DatumTijd">Datum en Tijd</label>
+    <input asp-for="DatumTijd" type="datetime">
+
+    <label for="Adres">Adres</label>
+    <input asp-for="Adres" type="text">
+
+    <label for="MaxAantalSpelers">Max Aantal Spelers</label>
+    <input asp-for="MaxAantalSpelers" type="number">
+
+    <button type="submit">Create</button>
+</form>

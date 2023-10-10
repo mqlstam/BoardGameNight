@@ -10,7 +10,7 @@ public class Bordspellenavond
 
     // Navigational properties
     public Persoon Organisator { get; set; }
-    public int OrganisatorId { get; set; }
+    public string OrganisatorId { get; set; } // Changed from int to string
     public ICollection<Persoon> Deelnemers { get; set; }
     public ICollection<Bordspel> Bordspellen { get; set; }
     public ICollection<Review> Reviews { get; set; }

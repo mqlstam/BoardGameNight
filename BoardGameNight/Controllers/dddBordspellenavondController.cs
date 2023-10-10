@@ -5,22 +5,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BoardGameNight.Controllers;
 
-public class PersoonController : Controller
+public class dddBordspellenavondController : Controller
 {
     private readonly ApplicationDbContext _context;
 
-    public PersoonController(ApplicationDbContext context)
+    public dddBordspellenavondController(ApplicationDbContext context)
     {
         _context = context;
     }
 
-    // GET: Persoon
+    // GET: Bordspellenavond
     public async Task<IActionResult> Index()
     {
-        return View(await _context.Personen.ToListAsync());
+        return View(await _context.Bordspellenavonden.ToListAsync());
     }
 
-    // GET: Persoon/Details/5
+    // GET: Bordspellenavond/Details/5
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
@@ -28,34 +28,34 @@ public class PersoonController : Controller
             return NotFound();
         }
 
-        var persoon = await _context.Personen
+        var bordspellenavond = await _context.Bordspellenavonden
             .FirstOrDefaultAsync(m => m.Id == id);
-        if (persoon == null)
+        if (bordspellenavond == null)
         {
             return NotFound();
         }
 
-        return View(persoon);
+        return View(bordspellenavond);
     }
 
-    // GET: Persoon/Create
+    // GET: Bordspellenavond/Create
     public IActionResult Create()
     {
         return View();
     }
 
-    // POST: Persoon/Create
+    // POST: Bordspellenavond/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,Naam,Email,Geslacht,Adres,Geboortedatum,Dieetwensen,Allergieën")] Persoon persoon)
+    public async Task<IActionResult> Create([Bind("Id,Naam,Datum,Locatie")] Bordspellenavond bordspellenavond)
     {
         if (ModelState.IsValid)
         {
-            _context.Add(persoon);
+            _context.Add(bordspellenavond);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        return View(persoon);
+        return View(bordspellenavond);
     }
 
     // Verdere acties (Edit, Delete)...

@@ -1,22 +1,51 @@
 @model BoardGameNight.Models.Bordspellenavond
 
 @{
-    ViewData["Title"] = "Edit Bordspellenavond";
+    ViewData["Title"] = "Edit";
 }
 
-<h1>@ViewData["Title"]</h1>
+<h1>Edit</h1>
 
-<form asp-action="Edit">
-    <input asp-for="Id" type="hidden">
+<h4>Bordspellenavond</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Adres" class="control-label"></label>
+                <input asp-for="Adres" class="form-control" />
+                <span asp-validation-for="Adres" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaxAantalSpelers" class="control-label"></label>
+                <input asp-for="MaxAantalSpelers" class="form-control" />
+                <span asp-validation-for="MaxAantalSpelers" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DatumTijd" class="control-label"></label>
+                <input asp-for="DatumTijd" class="form-control" />
+                <span asp-validation-for="DatumTijd" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Is18Plus" /> @Html.DisplayNameFor(model => model.Is18Plus)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="OrganisatorId" class="control-label"></label>
+                <select asp-for="OrganisatorId" class="form-control" asp-items="ViewBag.OrganisatorId"></select>
+                <span asp-validation-for="OrganisatorId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
 
-    <label for="DatumTijd">Datum en Tijd</label>
-    <input asp-for="DatumTijd" type="datetime">
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
 
-    <label for="Adres">Adres</label>
-    <input asp-for="Adres" type="text">
-
-    <label for="MaxAantalSpelers">Max Aantal Spelers</label>
-    <input asp-for="MaxAantalSpelers" type="number">
-
-    <button type="submit">Update</button>
-</form>
