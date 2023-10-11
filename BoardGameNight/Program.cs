@@ -2,6 +2,7 @@ using BoardGameNight;
 using BoardGameNight.Configurations;
 using BoardGameNight.Data;
 using BoardGameNight.Models;
+using BoardGameNight.Repositories;
 using BoardGameNight.Repositories.Implementations;
 using BoardGameNight.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -12,10 +13,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddScoped<IBordspelRepository, BordspelRepository>();
+builder.Services.AddScoped<IEtenRepository, EtenRepository>();
+builder.Services.AddScoped<IBordspelGenreRepository, BordspelGenreRepository>();
+builder.Services.AddScoped<ISoortBordspelRepository, SoortBordspelRepository>();
+builder.Services.AddScoped<IBordspellenavondRepository, BordspellenavondRepository>();
 builder.Services.AddScoped<BlobStorageService>();
 builder.Services.Configure<BlobStorageSettings>(builder.Configuration.GetSection("BlobStorageSettings"));
 
-//
+
 
 // Add the global exception handler
 builder.Services.AddScoped<GlobalExceptionHandler>();
@@ -45,12 +50,14 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthorization();
+
 app.UseAuthentication(); 
+app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
 
 // map razor pages
 app.MapRazorPages();

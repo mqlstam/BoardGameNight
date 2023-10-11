@@ -1,10 +1,12 @@
 using BoardGameNight.Data;
 using BoardGameNight.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace BoardGameNight.Controllers;
 
+[Authorize]
 public class ReviewController : Controller
 {
     private readonly ApplicationDbContext _context;

@@ -1,19 +1,30 @@
 using BoardGameNight.Models;
 using Microsoft.AspNetCore.Mvc;
 using BoardGameNight.Services;
+using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
+using BoardGameNight.Repositories;
 
+[Authorize]
 [Route("bordspel")]
-
 public class BordspelController : Controller
 {
     private readonly IBordspelRepository _bordspelRepository;
+    private readonly IBordspelGenreRepository _bordspelGenreRepository;
+    private readonly ISoortBordspelRepository _soortBordspelRepository;
     private readonly BlobStorageService _blobStorageService;
     private readonly ILogger<BordspelController> _logger;
 
-    public BordspelController(IBordspelRepository bordspelRepository, BlobStorageService blobStorageService,
+    public BordspelController(
+        IBordspelRepository bordspelRepository,
+        IBordspelGenreRepository bordspelGenreRepository,
+        ISoortBordspelRepository soortBordspelRepository,
+        BlobStorageService blobStorageService,
         ILogger<BordspelController> logger)
     {
         _bordspelRepository = bordspelRepository;
+        _bordspelGenreRepository = bordspelGenreRepository;
+        _soortBordspelRepository = soortBordspelRepository;
         _blobStorageService = blobStorageService;
         _logger = logger;
     }
@@ -43,8 +54,8 @@ public class BordspelController : Controller
         return View(bordspel);
     }
 
-// GET: Bordspel/Edit/5
-[HttpGet("edit/{id:int}")]
+    // GET: Bordspel/Edit/5
+    [HttpGet("edit/{id:int}")]
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null)
@@ -57,6 +68,9 @@ public class BordspelController : Controller
         {
             return NotFound();
         }
+
+        ViewBag.Genres = await _bordspelGenreRepository.GetAllAsync();
+        ViewBag.Soorten = await _soortBordspelRepository.GetAllAsync();
 
         return View(bordspel);
     }
@@ -116,19 +130,16 @@ public class BordspelController : Controller
 
         return View(bordspel);
     }
-
     // GET: Bordspel/Create
     [HttpGet("create")]
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
+        ViewBag.Genres = await _bordspelGenreRepository.GetAllAsync();
+        ViewBag.Soorten = await _soortBordspelRepository.GetAllAsync();
+
         return View();
     }
     
-    [HttpGet("test")]
-    public IActionResult TestExceptionHandler()
-    {
-        throw new NotImplementedException("This is a test exception");
-    }
     
     // POST: Bordspel/Create
     [HttpPost("create")]

@@ -71,6 +71,7 @@ namespace BoardGameNight.Areas.Identity.Pages.Account
         /// </summary>
         public class InputModel
         {
+
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -79,6 +80,33 @@ namespace BoardGameNight.Areas.Identity.Pages.Account
             [EmailAddress]
             [Display(Name = "Email")]
             public string Email { get; set; }
+            
+            [Required]
+            [Display(Name = "Naam")]
+            public string Naam { get; set; }
+
+            [Required]
+            [Display(Name = "Geslacht")]
+            public char Geslacht { get; set; }
+
+            [Required]
+            [Display(Name = "Adres")]
+            public string Adres { get; set; }
+
+            [Required]
+            [Display(Name = "Geboortedatum")]
+            [DataType(DataType.Date)]
+            public DateTime Geboortedatum { get; set; }
+            
+            [Required]
+            [Display(Name = "Dieetwensen")]
+            public string Dieetwensen { get; set; }
+            
+            
+            [Required]
+            [Display(Name = "Drankvoorkeur")]
+            public string Drankvoorkeur { get; set; }
+            
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -159,7 +187,14 @@ namespace BoardGameNight.Areas.Identity.Pages.Account
         {
             try
             {
-                return Activator.CreateInstance<Persoon>();
+                var user = Activator.CreateInstance<Persoon>();
+                user.Naam = Input.Naam;
+                user.Geslacht = (Geslacht)Enum.Parse(typeof(Geslacht), Input.Geslacht.ToString());
+                user.Adres = Input.Adres;
+                user.Geboortedatum = Input.Geboortedatum;
+                user.Dieetwensen = (Dieetwensen)Enum.Parse(typeof(Dieetwensen), Input.Dieetwensen);
+                user.DrankVoorkeur = (DrankVoorkeur)Enum.Parse(typeof(DrankVoorkeur), Input.Drankvoorkeur);
+                return user;
             }
             catch
             {

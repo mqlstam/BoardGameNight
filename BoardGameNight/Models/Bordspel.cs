@@ -3,6 +3,39 @@ using System.Collections.Generic;
 
 namespace BoardGameNight.Models
 {
+    // public enum BordspelGenres
+    // {
+    //     Strategie,
+    //     Familie,
+    //     Avontuur,
+    //     Coöperatief,
+    //     PartijOfSocialeSpellen,
+    //     Oorlogsspellen,
+    //     Fantasie,
+    //     EconomischeSpellen,
+    //     AbstracteSpellen,
+    //     HistorischeSpellen,
+    //     DeductieSpellen,
+    //     HorrorSpellen,
+    //     EducatieveSpellen,
+    //     RollenspelSpellen,
+    //     PuzzelSpellen
+    // }
+    //
+    // public enum SoortBordspel
+    // {
+    //     Tegellegspellen,
+    //     Kaartspellen,
+    //     Dobbelsteenspellen,
+    //     Miniatuurspellen,
+    //     RollAndMoveSpellen,
+    //     DeckBuildingSpellen,
+    //     WorkerPlacementSpellen,
+    //     CoOpSpellen,
+    //     RollenspelRPGSpellen,
+    //     SocialDeductionSpellen
+    // }
+    
     public class Bordspel 
     {
         [Required]
@@ -17,17 +50,15 @@ namespace BoardGameNight.Models
         public string Beschrijving { get; set; }
 
         [Required(ErrorMessage = "Genre is required.")]
-        [StringLength(100, ErrorMessage = "Genre cannot be longer than 100 characters.")]
-        public string Genre { get; set; }
+        public BordspelGenre Genre { get; set; }
+
+        public SoortBordspel? SoortSpel { get; set; }
 
         public bool Is18Plus { get; set; }
 
         [Url(ErrorMessage = "Invalid URL format.")]
         public string? FotoUrl { get; set; }
 
-        // Let's assume that SoortSpel can be null, but if it's provided, it shouldn't be longer than 100 characters
-        [StringLength(100, ErrorMessage = "SoortSpel cannot be longer than 100 characters.")]
-        public string? SoortSpel { get; set; }
 
         public ICollection<Bordspellenavond>? Bordspellenavonden { get; set; }
     }

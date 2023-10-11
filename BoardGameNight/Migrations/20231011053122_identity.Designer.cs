@@ -4,6 +4,7 @@ using BoardGameNight.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BoardGameNight.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231011053122_identity")]
+    partial class identity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,8 +41,10 @@ namespace BoardGameNight.Migrations
                     b.Property<string>("FotoUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("GenreId")
-                        .HasColumnType("int");
+                    b.Property<string>("Genre")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("Is18Plus")
                         .HasColumnType("bit");
@@ -49,14 +54,11 @@ namespace BoardGameNight.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int?>("SoortSpelId")
-                        .HasColumnType("int");
+                    b.Property<string>("SoortSpel")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("GenreId");
-
-                    b.HasIndex("SoortSpelId");
 
                     b.ToTable("Bordspel", (string)null);
                 });
@@ -243,24 +245,6 @@ namespace BoardGameNight.Migrations
                     b.ToTable("Review", (string)null);
                 });
 
-            modelBuilder.Entity("BordspelGenre", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Naam")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("BordspelGenres");
-                });
-
             modelBuilder.Entity("BordspellenavondBordspel", b =>
                 {
                     b.Property<int>("BordspelId")
@@ -428,41 +412,6 @@ namespace BoardGameNight.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("SoortBordspel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Naam")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SoortBordspellen");
-                });
-
-            modelBuilder.Entity("BoardGameNight.Models.Bordspel", b =>
-                {
-                    b.HasOne("BordspelGenre", "Genre")
-                        .WithMany("Bordspellen")
-                        .HasForeignKey("GenreId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SoortBordspel", "SoortSpel")
-                        .WithMany("Bordspellen")
-                        .HasForeignKey("SoortSpelId");
-
-                    b.Navigation("Genre");
-
-                    b.Navigation("SoortSpel");
-                });
-
             modelBuilder.Entity("BoardGameNight.Models.Bordspellenavond", b =>
                 {
                     b.HasOne("BoardGameNight.Models.Persoon", "Organisator")
@@ -597,16 +546,6 @@ namespace BoardGameNight.Migrations
                     b.Navigation("GeorganiseerdeAvonden");
 
                     b.Navigation("Reviews");
-                });
-
-            modelBuilder.Entity("BordspelGenre", b =>
-                {
-                    b.Navigation("Bordspellen");
-                });
-
-            modelBuilder.Entity("SoortBordspel", b =>
-                {
-                    b.Navigation("Bordspellen");
                 });
 #pragma warning restore 612, 618
         }

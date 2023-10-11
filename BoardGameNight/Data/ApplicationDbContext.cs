@@ -14,6 +14,8 @@ namespace BoardGameNight.Data
         public DbSet<Bordspellenavond> Bordspellenavonden { get; set; }
         public DbSet<Eten> Eten { get; set; }
         public DbSet<Review> Reviews { get; set; }
+        public DbSet<BordspelGenre> BordspelGenres { get; set; }
+        public DbSet<SoortBordspel> SoortBordspellen { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
