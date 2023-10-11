@@ -1,48 +1,36 @@
 @model BoardGameNight.Models.Bordspellenavond
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Bordspellenavond Details";
 }
 
-<h1>Details</h1>
+<h1>@ViewData["Title"]</h1>
 
-<div>
-    <h4>Bordspellenavond</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Adres)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Adres)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MaxAantalSpelers)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MaxAantalSpelers)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DatumTijd)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DatumTijd)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Is18Plus)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Is18Plus)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Organisator)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Organisator.Id)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Adres</th>
+            <th>Max Aantal Spelers</th>
+            <th>Datum Tijd</th>
+            <th>Leeftijd Restrictie</th>
+            <th>Dieetwensen</th>
+            <th>Drank Voorkeur</th>
+            <!-- Add other properties as needed -->
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>@Model.Adres</td>
+            <td>@Model.MaxAantalSpelers</td>
+            <td>@Model.DatumTijd</td>
+            <td>@Model.Is18Plus</td>
+            <td>@Model.Dieetwensen</td>
+            <td>@Model.DrankVoorkeur</td>
+            <!-- Add other properties as needed -->
+        </tr>
+    </tbody>
+</table>
+
+<a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+<a asp-action="Delete" asp-route-id="@Model.Id">Delete</a> |
+<a asp-action="Index">Back to List</a>

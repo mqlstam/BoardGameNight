@@ -69,6 +69,9 @@
       <_ContentIncludedByDefault Remove="Areas\Identity\Pages\_ValidationScriptsPartial.cshtml" />
       <_ContentIncludedByDefault Remove="Areas\Identity\Pages\_ViewImports.cshtml" />
       <_ContentIncludedByDefault Remove="Areas\Identity\Pages\_ViewStart.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Eten\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Eten\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Eten\Edit.cshtml" />
     </ItemGroup>
 
 </Project>

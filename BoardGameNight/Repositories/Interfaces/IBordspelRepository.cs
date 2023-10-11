@@ -1,6 +1,6 @@
 using BoardGameNight.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+
+namespace BoardGameNight.Repositories.Interfaces;
 
 public interface IBordspelRepository
 {

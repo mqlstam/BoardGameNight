@@ -1,9 +1,11 @@
 using BoardGameNight.Models;
-using Microsoft.AspNetCore.Mvc;
+using BoardGameNight.Repositories.Implementations;
+using BoardGameNight.Repositories.Interfaces;
 using BoardGameNight.Services;
 using Microsoft.AspNetCore.Authorization;
-using System.Threading.Tasks;
-using BoardGameNight.Repositories;
+using Microsoft.AspNetCore.Mvc;
+
+namespace BoardGameNight.Controllers;
 
 [Authorize]
 [Route("bordspel")]
@@ -46,10 +48,6 @@ public class BordspelController : Controller
         }
 
         var bordspel = await _bordspelRepository.GetByIdAsync(id.Value);
-        if (bordspel == null)
-        {
-            return NotFound();
-        }
 
         return View(bordspel);
     }
@@ -64,18 +62,13 @@ public class BordspelController : Controller
         }
 
         var bordspel = await _bordspelRepository.GetByIdAsync(id.Value);
-        if (bordspel == null)
-        {
-            return NotFound();
-        }
 
         ViewBag.Genres = await _bordspelGenreRepository.GetAllAsync();
         ViewBag.Soorten = await _soortBordspelRepository.GetAllAsync();
 
         return View(bordspel);
     }
-    
-    
+
 
     [HttpPost("edit/{id:int}")]
     [ValidateAntiForgeryToken]
@@ -130,6 +123,7 @@ public class BordspelController : Controller
 
         return View(bordspel);
     }
+
     // GET: Bordspel/Create
     [HttpGet("create")]
     public async Task<IActionResult> Create()
@@ -139,8 +133,8 @@ public class BordspelController : Controller
 
         return View();
     }
-    
-    
+
+
     // POST: Bordspel/Create
     [HttpPost("create")]
     [ValidateAntiForgeryToken]
@@ -159,6 +153,15 @@ public class BordspelController : Controller
                 var fotoUrl = await _blobStorageService.UploadImage(foto, "imagesbordspellen");
                 bordspel.FotoUrl = fotoUrl;
 
+                // Get genre 
+                var genre = await _bordspelGenreRepository.GetByIdAsync(bordspel.GenreId);
+
+                // Get soortspel
+                var soortSpel = await _soortBordspelRepository.GetByIdAsync(bordspel.SoortSpelId);
+                // Assign to navigation properties
+                bordspel.Genre = genre;
+                bordspel.SoortSpel = soortSpel;
+
                 await _bordspelRepository.CreateAsync(bordspel);
                 return RedirectToAction(nameof(Index));
             }
@@ -169,7 +172,8 @@ public class BordspelController : Controller
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, "An error occurred while saving the game. Please try again later.");
+                ModelState.AddModelError(string.Empty,
+                    "An error occurred while saving the game. Please try again later.");
                 _logger.LogError(ex, "Error creating bordspel");
             }
         }
@@ -180,9 +184,13 @@ public class BordspelController : Controller
             _logger.LogError("Model validation error: {0}", error.ErrorMessage);
         }
 
+        ViewBag.Genres = await _bordspelGenreRepository.GetAllAsync();
+        ViewBag.Soorten = await _soortBordspelRepository.GetAllAsync();
+
+
         return View(bordspel);
     }
-    
+
     // GET: Bordspel/Delete/5
     [HttpGet("delete/{id:int}")]
     public async Task<IActionResult> Delete(int? id)
@@ -220,7 +228,7 @@ public class BordspelController : Controller
         {
             // Log the exception message
             System.Diagnostics.Debug.WriteLine($"Exception caught in DeleteConfirmed: {ex.Message}");
-       }
+        }
 
         return RedirectToAction(nameof(Index));
     }

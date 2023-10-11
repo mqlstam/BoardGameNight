@@ -1,8 +1,6 @@
 using BoardGameNight.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace BoardGameNight.Repositories
+namespace BoardGameNight.Repositories.Interfaces
 {
     public interface IBordspellenavondRepository
     {
@@ -13,6 +11,5 @@ namespace BoardGameNight.Repositories
         Task UpdateAsync(Bordspellenavond bordspellenavond);
         Task DeleteAsync(int id);
         Task AddBordspelAsync(int bordspellenavondId, Bordspel bordspel);
-        Task AddEtenAsync(int bordspellenavondId, Eten eten);
     }
 }

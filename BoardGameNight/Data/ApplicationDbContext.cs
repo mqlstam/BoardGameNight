@@ -12,7 +12,6 @@ namespace BoardGameNight.Data
 
         public DbSet<Bordspel> Bordspellen { get; set; }
         public DbSet<Bordspellenavond> Bordspellenavonden { get; set; }
-        public DbSet<Eten> Eten { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<BordspelGenre> BordspelGenres { get; set; }
         public DbSet<SoortBordspel> SoortBordspellen { get; set; }
@@ -24,7 +23,6 @@ namespace BoardGameNight.Data
 
             modelBuilder.Entity<Bordspel>().ToTable("Bordspel");
             modelBuilder.Entity<Bordspellenavond>().ToTable("Bordspellenavond");
-            modelBuilder.Entity<Eten>().ToTable("Eten");
             modelBuilder.Entity<Review>().ToTable("Review");
 
             // Relatie tussen Persoon en Bordspellenavond (Organisator)
@@ -82,12 +80,6 @@ namespace BoardGameNight.Data
                 .WithOne(r => r.Persoon)
                 .HasForeignKey(r => r.PersoonId)
                 .OnDelete(DeleteBehavior.NoAction);
-
-            // One-to-Many relatie tussen Bordspellenavond en Eten
-            modelBuilder.Entity<Bordspellenavond>()
-                .HasMany(b => b.Eten)
-                .WithOne(e => e.Bordspellenavond)
-                .HasForeignKey(e => e.BordspellenavondId);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

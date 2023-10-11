@@ -1,6 +1,7 @@
 using BoardGameNight.Data;
 using BoardGameNight.Models;
 using BoardGameNight.Repositories;
+using BoardGameNight.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 public class BordspellenavondRepository : IBordspellenavondRepository
@@ -14,12 +15,18 @@ public class BordspellenavondRepository : IBordspellenavondRepository
 
     public async Task<List<Bordspellenavond>> GetAllAsync()
     {
-        return await _context.Bordspellenavonden.Include(b => b.Bordspellen).Include(e => e.Eten).ToListAsync();
+        return await _context.Bordspellenavonden
+            .Include(b => b.Bordspellen)
+            .Include(b => b.Organisator)
+            .ToListAsync();
     }
 
     public async Task<Bordspellenavond> GetByIdAsync(int id)
     {
-        return await _context.Bordspellenavonden.Include(b => b.Bordspellen).Include(e => e.Eten).FirstOrDefaultAsync(b => b.Id == id);
+        return await _context.Bordspellenavonden
+            .Include(b => b.Bordspellen)
+            .Include(b => b.Organisator)
+            .FirstOrDefaultAsync(m => m.Id == id);
     }
 
     public async Task CreateAsync(Bordspellenavond bordspellenavond, string userId)
@@ -55,13 +62,4 @@ public class BordspellenavondRepository : IBordspellenavondRepository
         }
     }
 
-    public async Task AddEtenAsync(int bordspellenavondId, Eten eten)
-    {
-        var bordspellenavond = await GetByIdAsync(bordspellenavondId);
-        if (bordspellenavond != null)
-        {
-            bordspellenavond.Eten.Add(eten);
-            await UpdateAsync(bordspellenavond);
-        }
-    }
 }

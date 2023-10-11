@@ -9,18 +9,20 @@ namespace BoardGameNight.Models
         V, // Vrouw
         X  // Niet gespecificeerd
     }
+    [Flags]
     public enum Dieetwensen
     {
-        Geen,
-        Vegetarisch,
-        Lactosevrij,
-        Notenallergie
+        Geen = 0,
+        Vegetarisch = 1,
+        Lactosevrij = 2,
+        Notenallergie = 3
     }
 
+    [Flags]
     public enum DrankVoorkeur
     {
-        GeenVoorkeur,
-        Alcoholvrij
+        GeenVoorkeur = 0,
+        Alcoholvrij = 1
     }
 
     public class Persoon : IdentityUser

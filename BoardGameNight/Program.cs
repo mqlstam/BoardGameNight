@@ -4,6 +4,7 @@ using BoardGameNight.Data;
 using BoardGameNight.Models;
 using BoardGameNight.Repositories;
 using BoardGameNight.Repositories.Implementations;
+using BoardGameNight.Repositories.Interfaces;
 using BoardGameNight.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddScoped<IBordspelRepository, BordspelRepository>();
-builder.Services.AddScoped<IEtenRepository, EtenRepository>();
 builder.Services.AddScoped<IBordspelGenreRepository, BordspelGenreRepository>();
 builder.Services.AddScoped<ISoortBordspelRepository, SoortBordspelRepository>();
 builder.Services.AddScoped<IBordspellenavondRepository, BordspellenavondRepository>();
@@ -26,7 +26,7 @@ builder.Services.Configure<BlobStorageSettings>(builder.Configuration.GetSection
 builder.Services.AddScoped<GlobalExceptionHandler>();
 
 // Apply the global exception handler to all actions
-builder.Services.AddControllersWithViews(options =>
+builder.Services.AddControllers(options =>
     options.Filters.Add(new ServiceFilterAttribute(typeof(GlobalExceptionHandler))));
 
 // Add DbContext

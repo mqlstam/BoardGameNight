@@ -19,9 +19,9 @@
         <tr>
             <td>@item.Naam</td>
             <td>@item.Beschrijving</td>
-            <td>@item.Genre</td>
+            <td>@item.Genre.Naam</td>
             <td>@(item.Is18Plus ? "Yes" : "No")</td>
-            <td>@item.SoortSpel</td>
+            <td>@item.SoortSpel.Naam</td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |

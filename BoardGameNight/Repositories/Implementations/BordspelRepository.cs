@@ -3,6 +3,7 @@ using BoardGameNight.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BoardGameNight.Repositories.Interfaces;
 
 namespace BoardGameNight.Repositories.Implementations
 {
