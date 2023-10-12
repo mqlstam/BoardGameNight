@@ -35,6 +35,8 @@ public class BordspellenavondController : Controller
         ViewData["UserAge"] = age;
         
         ViewData["UserName"] = user?.UserName ?? string.Empty; 
+        ViewData["UserId"] = user?.Id ?? string.Empty;
+
         return View(await _repo.GetAllAsync());
     }
     // GET: Bordspellenavond/Create
@@ -243,7 +245,7 @@ public async Task<IActionResult> Edit(int id, Bordspellenavond bordspellenavond,
     // POST: Bordspellenavond/Subscribe/5
     [HttpPost("subscribe/{id:int}")]
     [Authorize]
-    
+
     public async Task<IActionResult> Subscribe(int id)
     {
         try
@@ -267,7 +269,8 @@ public async Task<IActionResult> Edit(int id, Bordspellenavond bordspellenavond,
             // Check if the user is not the Organisator of the Bordspellenavond
             if (bordspellenavond.Organisator.Id == gebruiker.Id)
             {
-                ModelState.AddModelError("SubscriptionError", "Je mag je niet inschrijven voor je eigen bordspellenavond.");
+                ModelState.AddModelError("SubscriptionError",
+                    "Je mag je niet inschrijven voor je eigen bordspellenavond.");
                 return View("Error"); // Replace with your error view
             }
 
@@ -290,13 +293,70 @@ public async Task<IActionResult> Edit(int id, Bordspellenavond bordspellenavond,
         catch (Exception ex)
         {
             // Log the exception
-            
 
-            ModelState.AddModelError("SubscriptionError", "Er is een fout opgetreden bij het inschrijven voor de bordspellenavond.");
-            
-            
-            
-            
+
+            ModelState.AddModelError("SubscriptionError",
+                "Er is een fout opgetreden bij het inschrijven voor de bordspellenavond.");
+
+
+
+
             return View("Error"); // Replace with your error view
         }
-    }}
+    }
+
+    // POST: Bordspellenavond/Unsubscribe/5
+        [HttpPost("unsubscribe/{id:int}")]
+        [Authorize]
+        public async Task<IActionResult> Unsubscribe(int id)
+        {
+            try
+            {
+                // Get the Bordspellenavond
+                var bordspellenavond = await _repo.GetByIdAsync(id);
+                if (bordspellenavond == null)
+                {
+                    return NotFound();
+                }
+
+                // Get the current user
+                var userId = _userManager.GetUserId(User);
+                var gebruiker = await _userManager.FindByIdAsync(userId);
+
+                if (gebruiker == null)
+                {
+                    return NotFound();
+                }
+
+                // Check if the user is the Organisator of the Bordspellenavond
+                if (bordspellenavond.Organisator.Id == gebruiker.Id)
+                {
+                    ModelState.AddModelError("UnsubscriptionError", "Organisators kunnen zich niet uitschrijven voor hun eigen bordspellenavond.");
+                    return View("Error"); // Replace with your error view
+                }
+
+                // Check if the user is not already subscribed
+                if (!bordspellenavond.Deelnemers.Any(d => d.Id == gebruiker.Id))
+                {
+                    ModelState.AddModelError("UnsubscriptionError", "Je bent niet ingeschreven voor deze bordspellenavond.");
+                    return View("Error"); // Replace with your error view
+                }
+
+                // Unsubscribe the user from the Bordspellenavond
+                bordspellenavond.Deelnemers.Remove(gebruiker);
+
+                // Save changes
+                await _repo.UpdateAsync(bordspellenavond);
+
+                // Redirect to the Bordspellenavond details page
+                return RedirectToAction("Details", new { id = bordspellenavond.Id });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+
+                ModelState.AddModelError("UnsubscriptionError", "Er is een fout opgetreden bij het uitschrijven voor de bordspellenavond.");
+                return View("Error"); // Replace with your error view
+            }
+        }
+    }

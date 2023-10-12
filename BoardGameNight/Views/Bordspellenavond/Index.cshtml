@@ -61,10 +61,8 @@
             <td>
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a>
                 @if ((string)ViewData["UserName"] == item.Organisator.UserName)
-
                 {
                     @if ((int)ViewData["UserAge"] >= 18)
-
                     {
                         <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
                         <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
@@ -72,12 +70,19 @@
                 }
                 else
                 {
-                    <form asp-action="Subscribe" asp-route-id="@item.Id" method="post">
-                        <button type="submit" class="btn-link">Inschrijven</button>
-                    </form>
+@if (item.Deelnemers.Any(d => d.Id == ViewData["UserId"] as string))
+{
+    <form asp-action="Unsubscribe" asp-route-id="@item.Id" method="post">
+        <button type="submit" class="btn-link">Uitschrijven</button>
+    </form>
+}
+else
+{
+    <form asp-action="Subscribe" asp-route-id="@item.Id" method="post">
+        <button type="submit" class="btn-link">Inschrijven</button>
+    </form>
+}
                 }
-
-
             </td>
         </tr>
     }
