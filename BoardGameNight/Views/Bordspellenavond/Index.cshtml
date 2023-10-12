@@ -11,12 +11,21 @@
         <th>Datum Tijd</th>
         <th>Is 18+</th>
         <th>Organisator</th>
-        <th>Actions</th>
+        <th>Dieetwensen</th>
+        <th>DrankVoorkeur</th>
+        @if ((int)ViewData["UserAge"] >= 18)
+        {
+            <th>Actions</th>
+        }
     </tr>
     </thead>
     <tbody>
     @foreach (var item in Model)
     {
+        if ((int)ViewData["UserAge"] < 18 && item.Is18Plus)
+        {
+            continue;
+        }
         <tr>
             <td>@item.Id</td>
             <td>@item.Adres</td>
@@ -25,13 +34,57 @@
             <td>@(item.Is18Plus ? "Yes" : "No")</td>
             <td>@item.Organisator.UserName</td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                @foreach (Dieetwensen dieetwens in Enum.GetValues(typeof(Dieetwensen)))
+                {
+                    if (dieetwens != Dieetwensen.Geen || item.Dieetwensen == Dieetwensen.Geen)
+                    {
+                        if (item.Dieetwensen.HasFlag(dieetwens))
+                        {
+                            @dieetwens
+                            <br/>
+                        }
+                    }
+                }
+            </td>
+            <td>
+            @foreach (DrankVoorkeur drankvoorkeur in Enum.GetValues(typeof(DrankVoorkeur)))
+            {
+                if (drankvoorkeur != DrankVoorkeur.GeenVoorkeur || item.DrankVoorkeur == DrankVoorkeur.GeenVoorkeur)
+                {
+                    if (item.DrankVoorkeur.HasFlag(drankvoorkeur))
+                    {
+                        @drankvoorkeur
+                        <br/>
+                    }
+                }
+            }
+            <td>
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                @if ((string)ViewData["UserName"] == item.Organisator.UserName)
+
+                {
+                    @if ((int)ViewData["UserAge"] >= 18)
+
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    }
+                }
+                else
+                {
+                    <form asp-action="Subscribe" asp-route-id="@item.Id" method="post">
+                        <button type="submit" class="btn-link">Inschrijven</button>
+                    </form>
+                }
+
+
             </td>
         </tr>
     }
     </tbody>
 </table>
 
-<a asp-action="Create">Create New Bordspellenavond</a>
+@if ((int)ViewData["UserAge"] >= 18)
+{
+    <a asp-action="Create">Create New Bordspellenavond</a>
+}

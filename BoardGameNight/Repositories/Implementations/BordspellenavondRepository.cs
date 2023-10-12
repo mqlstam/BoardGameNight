@@ -18,6 +18,7 @@ public class BordspellenavondRepository : IBordspellenavondRepository
         return await _context.Bordspellenavonden
             .Include(b => b.Bordspellen)
             .Include(b => b.Organisator)
+            .Include(b => b.Deelnemers)
             .ToListAsync();
     }
 
@@ -26,6 +27,7 @@ public class BordspellenavondRepository : IBordspellenavondRepository
         return await _context.Bordspellenavonden
             .Include(b => b.Bordspellen)
             .Include(b => b.Organisator)
+            .Include(b => b.Deelnemers)
             .FirstOrDefaultAsync(m => m.Id == id);
     }
 

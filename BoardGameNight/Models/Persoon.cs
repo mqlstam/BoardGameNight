@@ -15,7 +15,7 @@ namespace BoardGameNight.Models
         Geen = 0,
         Vegetarisch = 1,
         Lactosevrij = 2,
-        Notenallergie = 3
+        Notenallergie = 4
     }
 
     [Flags]
@@ -39,5 +39,13 @@ namespace BoardGameNight.Models
         public ICollection<Bordspellenavond> GeorganiseerdeAvonden { get; set; }
         public ICollection<Bordspellenavond> DeelgenomenAvonden { get; set; }
         public ICollection<Review> Reviews { get; set; }
+        public int GetAge()
+        {
+            var today = DateTime.Today;
+            var age = today.Year - Geboortedatum.Year;
+            if (Geboortedatum.Date > today.AddYears(-age)) age--;
+            return age;
+        }
     }
+    
 }

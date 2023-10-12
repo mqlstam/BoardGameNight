@@ -15,6 +15,8 @@
             <th>Leeftijd Restrictie</th>
             <th>Dieetwensen</th>
             <th>Drank Voorkeur</th>
+            <th>Aantal Deelnemers</th>
+            <th>Bordspellen</th>
             <!-- Add other properties as needed -->
         </tr>
     </thead>
@@ -26,6 +28,14 @@
             <td>@Model.Is18Plus</td>
             <td>@Model.Dieetwensen</td>
             <td>@Model.DrankVoorkeur</td>
+            <td>@Model.Deelnemers.Count</td>    
+<td>
+    @foreach (var bordspel in Model.Bordspellen)
+    {
+        <a asp-controller="Bordspel" asp-action="Details" asp-route-id="@bordspel.Id">@bordspel.Naam</a>
+        <br/>
+    }
+</td>
             <!-- Add other properties as needed -->
         </tr>
     </tbody>

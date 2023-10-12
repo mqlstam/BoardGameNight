@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
+using BoardGameNight.Migrations;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using BoardGameNight.Models;
@@ -85,9 +86,6 @@ namespace BoardGameNight.Areas.Identity.Pages.Account
             [Display(Name = "Naam")]
             public string Naam { get; set; }
 
-            [Required]
-            [Display(Name = "Geslacht")]
-            public char Geslacht { get; set; }
 
             [Required]
             [Display(Name = "Adres")]
@@ -98,14 +96,14 @@ namespace BoardGameNight.Areas.Identity.Pages.Account
             [DataType(DataType.Date)]
             public DateTime Geboortedatum { get; set; }
             
-            [Required]
+            [Display(Name = "Geslacht")]
+            public Geslacht Geslacht { get; set; }
+
             [Display(Name = "Dieetwensen")]
-            public string Dieetwensen { get; set; }
-            
-            
-            [Required]
-            [Display(Name = "Drankvoorkeur")]
-            public string Drankvoorkeur { get; set; }
+            public List<Dieetwensen> Dieetwensen { get; set; }
+
+            [Display(Name = "DrankVoorkeur")]
+            public List<DrankVoorkeur> DrankVoorkeur { get; set; }
             
 
             /// <summary>
@@ -142,6 +140,14 @@ namespace BoardGameNight.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
+
+
+                // Set the enum properties
+                user.Geslacht = Input.Geslacht;
+
+                // Convert the list of enum values to a single enum value with flags
+                user.Dieetwensen = Input.Dieetwensen.Aggregate((Dieetwensen)0, (current, dieetwens) => current | dieetwens);
+                user.DrankVoorkeur = Input.DrankVoorkeur.Aggregate((DrankVoorkeur)0, (current, drankvoorkeur) => current | drankvoorkeur);
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
@@ -192,8 +198,9 @@ namespace BoardGameNight.Areas.Identity.Pages.Account
                 user.Geslacht = (Geslacht)Enum.Parse(typeof(Geslacht), Input.Geslacht.ToString());
                 user.Adres = Input.Adres;
                 user.Geboortedatum = Input.Geboortedatum;
-                user.Dieetwensen = (Dieetwensen)Enum.Parse(typeof(Dieetwensen), Input.Dieetwensen);
-                user.DrankVoorkeur = (DrankVoorkeur)Enum.Parse(typeof(DrankVoorkeur), Input.Drankvoorkeur);
+                user.Dieetwensen = Input.Dieetwensen.Aggregate((Dieetwensen)0, (current, next) => current | next);
+
+                user.DrankVoorkeur = Input.DrankVoorkeur.Aggregate((DrankVoorkeur)0, (current, next) => current | next);
                 return user;
             }
             catch
