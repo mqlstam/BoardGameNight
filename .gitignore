@@ -3,6 +3,6 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
-/BoardGameNight/wwwroot/lib/
-/BoardGameNight/BoardGameNight/wwwroot/lib/
+BoardGameNight/wwwroot/lib/
+BoardGameNight/BoardGameNight/wwwroot/lib/
 
