@@ -12,4 +12,4 @@
 /dataSources/
 /dataSources.local.xml
 # Ignore wwwroot/lib directory
-BoardGameNight/wwwroot/lib/
+wwwroot/lib/
