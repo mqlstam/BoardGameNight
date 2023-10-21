@@ -4,6 +4,7 @@ obj/
 riderModule.iml
 /_ReSharper.Caches/
 BoardGameNight/wwwroot/lib/
+BoardGameNight/Areas/
 BoardGameNight/BoardGameNight/wwwroot/lib/
 BoardGameNight/BoardGameNight/Areas/
 
