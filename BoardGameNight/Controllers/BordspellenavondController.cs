@@ -39,6 +39,47 @@ public class BordspellenavondController : Controller
 
         return View(await _repo.GetAllAsync());
     }
+    
+    // GET: Bordspellenavond/MyBordspellenavonden
+    
+    [HttpGet("mybordspellenavonden")]
+    [Authorize]
+    
+    public async Task<IActionResult> MyBordspellenavonden()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        var age = user?.GetAge() ?? 0;
+
+        ViewData["UserAge"] = age;
+        
+        ViewData["UserName"] = user?.UserName ?? string.Empty; 
+        ViewData["UserId"] = user?.Id ?? string.Empty;
+
+        return View(await _repo.GetAllAsync());
+        
+    }
+    
+    // GET: Bordspellenavond/Ingeschreven
+    
+    [HttpGet("ingeschreven")]
+    [Authorize]
+    
+    public async Task<IActionResult> Ingeschreven()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        var age = user?.GetAge() ?? 0;
+
+        ViewData["UserAge"] = age;
+        
+        ViewData["UserName"] = user?.UserName ?? string.Empty; 
+        ViewData["UserId"] = user?.Id ?? string.Empty;
+
+        return View(await _repo.GetAllAsync());
+        
+    }
+    
+    
+    
     // GET: Bordspellenavond/Create
     [Authorize(policy : "MinimumAge")]
     public async Task<IActionResult> Create()
@@ -91,6 +132,8 @@ public class BordspellenavondController : Controller
             // Convert selected drink preferences to DrankVoorkeur enum value
             bordspellenavond.DrankVoorkeur = (DrankVoorkeur)selectedDrankVoorkeur
                 .Aggregate(0, (current, drink) => current | drink);
+            
+            bordspellenavond.Is18Plus = bordspellenavond.Bordspellen.Any(b => b.Is18Plus);
 
             await _repo.CreateAsync(bordspellenavond, userId);
             return RedirectToAction(nameof(Index));
@@ -123,22 +166,20 @@ public class BordspellenavondController : Controller
         return View(bordspellenavond);
     }
 
-    // POST: Bordspellenavond/Edit/5
-[HttpPost("edit/{id:int}")]
-[ValidateAntiForgeryToken]
-[Authorize(policy : "MinimumAge")]
-public async Task<IActionResult> Edit(int id, Bordspellenavond bordspellenavond, 
-    List<int> selectedBordspellen, 
-    List<int> selectedDietaryRequirements, 
-    List<int> selectedDrankVoorkeur)
-{
-    if (id != bordspellenavond.Id)
+// POST: Bordspellenavond/Edit/5
+    [HttpPost("edit/{id:int}")]
+    [ValidateAntiForgeryToken]
+    [Authorize(policy : "MinimumAge")]
+    public async Task<IActionResult> Edit(int id, Bordspellenavond bordspellenavond, 
+        List<int> selectedBordspellen, 
+        List<int> selectedDietaryRequirements, 
+        List<int> selectedDrankVoorkeur)
     {
-        return NotFound();
-    }
+        if (id != bordspellenavond.Id)
+        {
+            return NotFound();
+        }
 
-    if (ModelState.IsValid)
-    {
         // Load the existing entity from the database
         var existingBordspellenavond = await _repo.GetByIdAsync(id);
 
@@ -147,11 +188,21 @@ public async Task<IActionResult> Edit(int id, Bordspellenavond bordspellenavond,
             return NotFound();
         }
 
-        // Update only the fields that are being edited
-        existingBordspellenavond.Adres = bordspellenavond.Adres;
-        existingBordspellenavond.MaxAantalSpelers = bordspellenavond.MaxAantalSpelers;
-        existingBordspellenavond.DatumTijd = bordspellenavond.DatumTijd;
-        existingBordspellenavond.Is18Plus = bordspellenavond.Is18Plus;
+        // Check if there are any participants
+        if (existingBordspellenavond.Deelnemers.Any())
+        {
+            ModelState.AddModelError("EditError",
+                "Je mag deze bordspellenavond niet wijzigen omdat er al spelers zijn ingeschreven.");
+            return View("Error"); // Replace with your error view
+        }
+
+        if (ModelState.IsValid)
+        {
+            // Update only the fields that are being edited
+            existingBordspellenavond.Adres = bordspellenavond.Adres;
+            existingBordspellenavond.MaxAantalSpelers = bordspellenavond.MaxAantalSpelers;
+            existingBordspellenavond.DatumTijd = bordspellenavond.DatumTijd;
+            existingBordspellenavond.Is18Plus = bordspellenavond.Is18Plus;
 
         // Update selected board games
         var currentGameIds = existingBordspellenavond.Bordspellen.Select(b => b.Id).ToList();
@@ -187,14 +238,15 @@ public async Task<IActionResult> Edit(int id, Bordspellenavond bordspellenavond,
             .Aggregate(0, (current, requirement) => current | requirement);
         existingBordspellenavond.DrankVoorkeur = (DrankVoorkeur)selectedDrankVoorkeur
             .Aggregate(0, (current, drink) => current | drink);
+        
+        existingBordspellenavond.Is18Plus = existingBordspellenavond.Bordspellen.Any(b => b.Is18Plus);
 
         await _repo.UpdateAsync(existingBordspellenavond);
         return RedirectToAction(nameof(Index));
-    }
+        }
 
-    return View(bordspellenavond);
-}
-    
+        return View(bordspellenavond);
+    }
     // GET: Bordspellenavond/Details/5
     [Authorize]
 
@@ -213,9 +265,9 @@ public async Task<IActionResult> Edit(int id, Bordspellenavond bordspellenavond,
 
         return View(bordspellenavond);
     }
-    
 
-    // GET: Bordspellenavond/Delete/5
+
+// GET: Bordspellenavond/Delete/5
     [Authorize(policy : "MinimumAge")]
     public async Task<IActionResult> Delete(int? id)
     {
@@ -229,15 +281,38 @@ public async Task<IActionResult> Edit(int id, Bordspellenavond bordspellenavond,
         {
             return NotFound();
         }
+
+        // Check if there are any participants
+        if (bordspellenavond.Deelnemers.Any())
+        {
+            ModelState.AddModelError("DeleteError",
+                "Je mag deze bordspellenavond niet verwijderen omdat er al spelers zijn ingeschreven.");
+            return View("Error"); // Replace with your error view
+        }
+
         return View(bordspellenavond);
     }
 
-    // POST: Bordspellenavond/Delete/5
+// POST: Bordspellenavond/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     [Authorize(policy : "MinimumAge")]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
+        var bordspellenavond = await _repo.GetByIdAsync(id);
+        if (bordspellenavond == null)
+        {
+            return NotFound();
+        }
+
+        // Check if there are any participants
+        if (bordspellenavond.Deelnemers.Any())
+        {
+            ModelState.AddModelError("DeleteError",
+                "Je mag deze bordspellenavond niet verwijderen omdat er al spelers zijn ingeschreven.");
+            return View("Error"); // Replace with your error view
+        }
+
         await _repo.DeleteAsync(id);
         return RedirectToAction(nameof(Index));
     }

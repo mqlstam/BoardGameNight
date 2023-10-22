@@ -1,0 +1,100 @@
+@model IEnumerable<BoardGameNight.Models.Bordspellenavond>
+
+<h1>Bordspellenavonden</h1>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Adres</th>
+        <th>Max Aantal Spelers</th>
+        <th>Datum Tijd</th>
+        <th>Is 18+</th>
+        <th>Organisator</th>
+        <th>Dieetwensen</th>
+        <th>DrankVoorkeur</th>
+        @if ((int)ViewData["UserAge"] >= 18)
+        {
+            <th>Actions</th>
+        }
+    </tr>
+    </thead>
+<tbody>
+@foreach (var item in Model)
+{
+    if ((int)ViewData["UserAge"] < 18 && item.Is18Plus)
+    {
+        continue;
+    }
+    // Check if current user is subscribed to the game
+    if (!item.Deelnemers.Any(d => d.Id == ViewData["UserId"] as string))
+    {
+        continue;
+    }
+    <tr>
+            <td>@item.Id</td>
+            <td>@item.Adres</td>
+            <td>@item.MaxAantalSpelers</td>
+            <td>@item.DatumTijd</td>
+            <td>@(item.Is18Plus ? "Yes" : "No")</td>
+            <td>@item.Organisator.UserName</td>
+            <td>
+                @foreach (Dieetwensen dieetwens in Enum.GetValues(typeof(Dieetwensen)))
+                {
+                    if (dieetwens != Dieetwensen.Geen || item.Dieetwensen == Dieetwensen.Geen)
+                    {
+                        if (item.Dieetwensen.HasFlag(dieetwens))
+                        {
+                            @dieetwens
+                            <br/>
+                        }
+                    }
+                }
+            </td>
+            <td>
+            @foreach (DrankVoorkeur drankvoorkeur in Enum.GetValues(typeof(DrankVoorkeur)))
+            {
+                if (drankvoorkeur != DrankVoorkeur.GeenVoorkeur || item.DrankVoorkeur == DrankVoorkeur.GeenVoorkeur)
+                {
+                    if (item.DrankVoorkeur.HasFlag(drankvoorkeur))
+                    {
+                        @drankvoorkeur
+                        <br/>
+                    }
+                }
+            }
+            <td>
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                @if ((string)ViewData["UserName"] == item.Organisator.UserName)
+                {
+                    @if ((int)ViewData["UserAge"] >= 18)
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    }
+                }
+                else
+                {
+@if (item.Deelnemers.Any(d => d.Id == ViewData["UserId"] as string))
+{
+    <form asp-action="Unsubscribe" asp-route-id="@item.Id" method="post">
+        <button type="submit" class="btn-link">Uitschrijven</button>
+    </form>
+}
+else
+{
+    <form asp-action="Subscribe" asp-route-id="@item.Id" method="post">
+        <button type="submit" class="btn-link">Inschrijven</button>
+    </form>
+}
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@if ((int)ViewData["UserAge"] >= 18)
+{
+    <a asp-action="Create">Create New Bordspellenavond</a>
+}

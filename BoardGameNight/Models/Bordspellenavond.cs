@@ -19,7 +19,7 @@ namespace BoardGameNight.Models
         [FutureDate(ErrorMessage = "Datum en tijd moeten in de toekomst liggen.")]
         public DateTime DatumTijd { get; set; }
 
-        public bool Is18Plus { get; set; }
+        public bool Is18Plus { get; set; } = false;
 
         [Required(ErrorMessage = "Dieetwensen is vereist.")]
         public Dieetwensen Dieetwensen { get; set; }
