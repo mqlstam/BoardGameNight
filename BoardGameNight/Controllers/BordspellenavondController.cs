@@ -162,6 +162,14 @@ public class BordspellenavondController : Controller
 
         ViewBag.Bordspellen = await _bordspellenRepository.GetAllAsync();
         ViewBag.DietaryRequirements = Enum.GetValues(typeof(Dieetwensen));
+        if (bordspellenavond.Deelnemers.Any())
+        {
+            // Add error
+            TempData["EditError"] = "Cannot edit bordspellenavond with subscribers";
+
+            return RedirectToAction("Index");
+
+        }
 
         return View(bordspellenavond);
     }
@@ -189,12 +197,14 @@ public class BordspellenavondController : Controller
         }
 
         // Check if there are any participants
-        if (existingBordspellenavond.Deelnemers.Any())
-        {
-            ModelState.AddModelError("EditError",
-                "Je mag deze bordspellenavond niet wijzigen omdat er al spelers zijn ingeschreven.");
-            return View("Error"); // Replace with your error view
-        }
+            if(existingBordspellenavond.Deelnemers.Any())
+            {
+                // Add error
+                TempData["EditError"] = "Cannot edit bordspellenavond with subscribers";
+    
+                // Redirect back to Details
+                return RedirectToAction("Details", new {id}); 
+            }
 
         if (ModelState.IsValid)
         {
@@ -283,12 +293,12 @@ public class BordspellenavondController : Controller
         }
 
         // Check if there are any participants
-        if (bordspellenavond.Deelnemers.Any())
+        if(bordspellenavond.Deelnemers.Any())
         {
-            ModelState.AddModelError("DeleteError",
-                "Je mag deze bordspellenavond niet verwijderen omdat er al spelers zijn ingeschreven.");
-            return View("Error"); // Replace with your error view
+            TempData["DeleteError"] = "Cannot delete bordspellenavond with subscribers";
+            return RedirectToAction("Index");
         }
+
 
         return View(bordspellenavond);
     }
@@ -306,11 +316,10 @@ public class BordspellenavondController : Controller
         }
 
         // Check if there are any participants
-        if (bordspellenavond.Deelnemers.Any())
+        if(bordspellenavond.Deelnemers.Any())
         {
-            ModelState.AddModelError("DeleteError",
-                "Je mag deze bordspellenavond niet verwijderen omdat er al spelers zijn ingeschreven.");
-            return View("Error"); // Replace with your error view
+            TempData["DeleteError"] = "Cannot delete bordspellenavond with subscribers";
+            return RedirectToAction("Index");
         }
 
         await _repo.DeleteAsync(id);
@@ -322,64 +331,85 @@ public class BordspellenavondController : Controller
     [Authorize]
 
     public async Task<IActionResult> Subscribe(int id)
+{
+    try
     {
-        try
+        // Get the Bordspellenavond
+        var bordspellenavond = await _repo.GetByIdAsync(id);
+        if (bordspellenavond == null)
         {
-            // Get the Bordspellenavond
-            var bordspellenavond = await _repo.GetByIdAsync(id);
-            if (bordspellenavond == null)
-            {
-                return NotFound();
-            }
-
-            // Get the current user
-            var userId = _userManager.GetUserId(User);
-            var gebruiker = await _userManager.FindByIdAsync(userId);
-
-            if (gebruiker == null)
-            {
-                return NotFound();
-            }
-
-            // Check if the user is not the Organisator of the Bordspellenavond
-            if (bordspellenavond.Organisator.Id == gebruiker.Id)
-            {
-                ModelState.AddModelError("SubscriptionError",
-                    "Je mag je niet inschrijven voor je eigen bordspellenavond.");
-                return View("Error"); // Replace with your error view
-            }
-
-            // Check if the user is already subscribed
-            if (bordspellenavond.Deelnemers.Any(d => d.Id == gebruiker.Id))
-            {
-                ModelState.AddModelError("SubscriptionError", "Je bent al ingeschreven voor deze bordspellenavond.");
-                return View("Error"); // Replace with your error view
-            }
-
-            // Subscribe the user to the Bordspellenavond
-            bordspellenavond.Deelnemers.Add(gebruiker);
-
-            // Save changes
-            await _repo.UpdateAsync(bordspellenavond);
-
-            // Redirect to the Bordspellenavond details page
-            return RedirectToAction("Details", new { id = bordspellenavond.Id });
+            return NotFound();
         }
-        catch (Exception ex)
+
+        // Check if the Bordspellenavond is full
+        if (bordspellenavond.Deelnemers.Count >= bordspellenavond.MaxAantalSpelers)
         {
-            // Log the exception
-
-
-            ModelState.AddModelError("SubscriptionError",
-                "Er is een fout opgetreden bij het inschrijven voor de bordspellenavond.");
-
-
-
-
+            ModelState.AddModelError("SubscriptionError", "De bordspellenavond is vol.");
             return View("Error"); // Replace with your error view
         }
-    }
+        
+        
 
+        // Get the current user
+        var userId = _userManager.GetUserId(User);
+        var gebruiker = await _userManager.FindByIdAsync(userId);
+
+        if (gebruiker == null)
+        {
+            return NotFound();
+        }
+        
+        
+
+        // Check if the user is not the Organisator of the Bordspellenavond
+        if (bordspellenavond.Organisator.Id == gebruiker.Id)
+        {
+            ModelState.AddModelError("SubscriptionError",
+                "Je mag je niet inschrijven voor je eigen bordspellenavond.");
+            return View("Error"); // Replace with your error view
+        }
+
+        // Check if the user is already subscribed
+        if (bordspellenavond.Deelnemers.Any(d => d.Id == gebruiker.Id))
+        {
+            ModelState.AddModelError("SubscriptionError", "Je bent al ingeschreven voor deze bordspellenavond.");
+            return View("Error"); // Replace with your error view
+        }
+        
+        // Check dieetwensen
+        if(!gebruiker.Dieetwensen.HasFlag(bordspellenavond.Dieetwensen)) {
+    
+            TempData["DietWarning"] = "Let op: je dieetwensen komen niet overeen met wat er geserveerd wordt bij deze bordspellenavond.";
+
+        }
+
+        // Check allergieën
+        if(bordspellenavond.Dieetwensen.HasFlag(Dieetwensen.Notenallergie) && 
+           gebruiker.Dieetwensen.HasFlag(Dieetwensen.Notenallergie)) {
+     
+            TempData["AllergyWarning"] = "Let op: er worden noten geserveerd bij deze bordspellenavond.";
+
+        }
+
+        // Subscribe the user to the Bordspellenavond
+        bordspellenavond.Deelnemers.Add(gebruiker);
+
+        // Save changes
+        await _repo.UpdateAsync(bordspellenavond);
+
+        // Redirect to the Bordspellenavond details page
+        return RedirectToAction("Details", new { id = bordspellenavond.Id });
+    }
+    catch (Exception ex)
+    {
+        // Log the exception
+
+        ModelState.AddModelError("SubscriptionError",
+            "Er is een fout opgetreden bij het inschrijven voor de bordspellenavond.");
+
+        return View("Error"); // Replace with your error view
+    }
+}
     // POST: Bordspellenavond/Unsubscribe/5
         [HttpPost("unsubscribe/{id:int}")]
         [Authorize]

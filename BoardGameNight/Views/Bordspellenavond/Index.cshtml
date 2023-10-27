@@ -1,6 +1,21 @@
 @model IEnumerable<BoardGameNight.Models.Bordspellenavond>
 
+@if (TempData["DeleteError"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["DeleteError"]
+    </div>
+}
+
+@if (TempData["EditError"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["EditError"]
+    </div>
+}
+
 <h1>Bordspellenavonden</h1>
+
 
 <table class="table">
     <thead>

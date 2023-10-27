@@ -11,5 +11,9 @@ namespace BoardGameNight.Repositories.Interfaces
         Task UpdateAsync(Bordspellenavond bordspellenavond);
         Task DeleteAsync(int id);
         Task AddBordspelAsync(int bordspellenavondId, Bordspel bordspel);
+
+        Task<bool> CanUserJoinGameNight(string userId, DateTime gameNightDate);
+
+        Task JoinGameNight(int gameNightId, string userId, DateTime gameNightDate);
     }
 }

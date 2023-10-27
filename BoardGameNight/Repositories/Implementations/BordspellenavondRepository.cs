@@ -33,6 +33,7 @@ public class BordspellenavondRepository : IBordspellenavondRepository
 
     public async Task CreateAsync(Bordspellenavond bordspellenavond, string userId)
     {
+        
         bordspellenavond.Organisator.Id = userId;
         _context.Bordspellenavonden.Add(bordspellenavond);
         await _context.SaveChangesAsync();
@@ -63,5 +64,38 @@ public class BordspellenavondRepository : IBordspellenavondRepository
             await UpdateAsync(bordspellenavond);
         }
     }
+    public async Task<bool> CanUserJoinGameNight(string userId, DateTime gameNightDate)
+    {
+        var userGameNights = await _context.Bordspellenavonden
+            .Include(b => b.Deelnemers)
+            .Where(b => b.DatumTijd.Date == gameNightDate.Date)
+            .ToListAsync();
 
+        return !userGameNights.Any(g => g.Deelnemers.Any(d => d.Id == userId));
+    }
+
+    public async Task JoinGameNight(int gameNightId, string userId, DateTime gameNightDate)
+    {
+        var canJoin = await CanUserJoinGameNight(userId, gameNightDate);
+        if (!canJoin)
+        {
+            throw new Exception("Je kunt je niet aanmelden voor meer dan een spelavond per dag.");
+        }
+
+        var gameNight = await GetByIdAsync(gameNightId);
+        if (gameNight != null)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user != null)
+            {
+                gameNight.Deelnemers.Add(user);
+                await UpdateAsync(gameNight);
+            }
+            else
+            {
+                throw new Exception("Gebruiker niet gevonden.");
+            }
+        }
+    }
 }
+
