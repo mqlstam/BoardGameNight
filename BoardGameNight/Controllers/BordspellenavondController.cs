@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using BoardGameNight.Migrations;
 using BoardGameNight.Models;
 using BoardGameNight.Repositories;
@@ -276,7 +277,6 @@ public class BordspellenavondController : Controller
         return View(bordspellenavond);
     }
 
-
 // GET: Bordspellenavond/Delete/5
     [Authorize(policy : "MinimumAge")]
     public async Task<IActionResult> Delete(int? id)
@@ -299,6 +299,13 @@ public class BordspellenavondController : Controller
             return RedirectToAction("Index");
         }
 
+        // Check if the current user is the owner of the bordspellenavond
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // assuming you are using ASP.NET Identity
+        if(bordspellenavond.OrganisatorId != userId)
+        {
+            TempData["DeleteError"] = "You can only delete your own bordspellenavond";
+            return RedirectToAction("Index");
+        }
 
         return View(bordspellenavond);
     }
@@ -322,10 +329,17 @@ public class BordspellenavondController : Controller
             return RedirectToAction("Index");
         }
 
+        // Check if the current user is the owner of the bordspellenavond
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // assuming you are using ASP.NET Identity
+        if(bordspellenavond.OrganisatorId != userId)
+        {
+            TempData["DeleteError"] = "You can only delete your own bordspellenavond";
+            return RedirectToAction("Index");
+        }
+
         await _repo.DeleteAsync(id);
         return RedirectToAction(nameof(Index));
     }
-    
     // POST: Bordspellenavond/Subscribe/5
     [HttpPost("subscribe/{id:int}")]
     [Authorize]
