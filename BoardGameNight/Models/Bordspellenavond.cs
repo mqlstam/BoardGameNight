@@ -5,6 +5,11 @@ namespace BoardGameNight.Models
 {
     public class Bordspellenavond
     {
+        
+        public Bordspellenavond()
+        {
+            PotluckItems = new List<PotluckItem>();
+        }
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Adres is vereist.")]
@@ -31,9 +36,15 @@ namespace BoardGameNight.Models
         public Persoon? Organisator { get; set; }
 
         public string? OrganisatorId { get; set; }
+        
+        public bool IsPotluck { get; set; } = false;
+
 
         public ICollection<Persoon> Deelnemers { get; set; } = new List<Persoon>();
         public ICollection<Bordspel> Bordspellen { get; set; } = new List<Bordspel>();
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
+        
+        public ICollection<PotluckItem> PotluckItems { get; set; }
+
     }
 }

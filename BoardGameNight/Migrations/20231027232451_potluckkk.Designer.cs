@@ -4,6 +4,7 @@ using BoardGameNight.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BoardGameNight.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231027232451_potluckkk")]
+    partial class potluckkk
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -198,23 +201,22 @@ namespace BoardGameNight.Migrations
                     b.Property<int>("BordspellenavondId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Dieetwensen")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("ParticipantId")
+                    b.Property<string>("ContributorId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DietaryRequirements")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BordspellenavondId");
 
-                    b.HasIndex("ParticipantId");
+                    b.HasIndex("ContributorId");
 
                     b.ToTable("PotluckItem");
                 });
@@ -489,15 +491,15 @@ namespace BoardGameNight.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BoardGameNight.Models.Persoon", "Participant")
+                    b.HasOne("BoardGameNight.Models.Persoon", "Contributor")
                         .WithMany("ContributedPotluckItems")
-                        .HasForeignKey("ParticipantId")
+                        .HasForeignKey("ContributorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Bordspellenavond");
 
-                    b.Navigation("Participant");
+                    b.Navigation("Contributor");
                 });
 
             modelBuilder.Entity("BoardGameNight.Models.Review", b =>

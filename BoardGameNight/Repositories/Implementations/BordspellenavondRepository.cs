@@ -3,6 +3,10 @@ using BoardGameNight.Models;
 using BoardGameNight.Repositories;
 using BoardGameNight.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 public class BordspellenavondRepository : IBordspellenavondRepository
 {
@@ -19,6 +23,7 @@ public class BordspellenavondRepository : IBordspellenavondRepository
             .Include(b => b.Bordspellen)
             .Include(b => b.Organisator)
             .Include(b => b.Deelnemers)
+            .Include(b => b.PotluckItems)
             .ToListAsync();
     }
 
@@ -28,12 +33,12 @@ public class BordspellenavondRepository : IBordspellenavondRepository
             .Include(b => b.Bordspellen)
             .Include(b => b.Organisator)
             .Include(b => b.Deelnemers)
+            .Include(b => b.PotluckItems)
             .FirstOrDefaultAsync(m => m.Id == id);
     }
 
     public async Task CreateAsync(Bordspellenavond bordspellenavond, string userId)
     {
-        
         bordspellenavond.Organisator.Id = userId;
         _context.Bordspellenavonden.Add(bordspellenavond);
         await _context.SaveChangesAsync();
@@ -64,6 +69,7 @@ public class BordspellenavondRepository : IBordspellenavondRepository
             await UpdateAsync(bordspellenavond);
         }
     }
+    
     public async Task<bool> CanUserJoinGameNight(string userId, DateTime gameNightDate)
     {
         var userGameNights = await _context.Bordspellenavonden
@@ -97,5 +103,15 @@ public class BordspellenavondRepository : IBordspellenavondRepository
             }
         }
     }
-}
 
+    public async Task AddPotluckItemAsync(PotluckItem item)
+    {
+        // Get Bordspellenavond
+        var bordspellenavond = await GetByIdAsync(item.BordspellenavondId); 
+
+        // Add PotluckItem
+        bordspellenavond.PotluckItems.Add(item);
+
+        await UpdateAsync(bordspellenavond);
+    }
+}

@@ -24,6 +24,7 @@ public class BordspellenavondController : Controller
         _repo = repo;
         _bordspellenRepository = bordspellenRepository;
         _userManager = userManager;
+        
     }
     // GET: Bordspellenavond
     [Authorize]
@@ -97,8 +98,14 @@ public class BordspellenavondController : Controller
     public async Task<IActionResult> Create(Bordspellenavond bordspellenavond, 
         List<int> selectedBordspellen, 
         List<int> selectedDietaryRequirements, 
-        List<int> selectedDrankVoorkeur) // changed from selectedDrinks
+        List<int> selectedDrankVoorkeur,
+    List<PotluckItem> potluckItems) 
+
+        
     {
+        try
+        {
+        
         if (ModelState.IsValid)
         {
             
@@ -110,7 +117,10 @@ public class BordspellenavondController : Controller
                     "Je moet 18 jaar of ouder zijn om een bordspellenavond te organiseren.");
             }
 
-
+            foreach (var item in potluckItems)
+            {
+                bordspellenavond.PotluckItems.Add(item);
+            }
             bordspellenavond.Organisator = organisator;
 
             // Add selected board games to bordspellenavond
@@ -134,17 +144,57 @@ public class BordspellenavondController : Controller
             bordspellenavond.DrankVoorkeur = (DrankVoorkeur)selectedDrankVoorkeur
                 .Aggregate(0, (current, drink) => current | drink);
             
+            
+            // add potuck
+            foreach (var item in potluckItems)
+            {
+                bordspellenavond.PotluckItems.Add(item);
+            }
+            
             bordspellenavond.Is18Plus = bordspellenavond.Bordspellen.Any(b => b.Is18Plus);
-
+            if (bordspellenavond.IsPotluck)
+            {
+                await _repo.CreateAsync(bordspellenavond, userId);
+                return RedirectToAction("CreatePotluckItem", new { bordspellenavondId = bordspellenavond.Id });
+            }
             await _repo.CreateAsync(bordspellenavond, userId);
+
             return RedirectToAction(nameof(Index));
         }
 
         ViewBag.Bordspellen = await _bordspellenRepository.GetAllAsync();
         ViewBag.DietaryRequirements = Enum.GetValues(typeof(Dieetwensen));
+        if (!ModelState.IsValid)
+        {
+            // ModelState is not valid, let's see why
+            var errors = ModelState
+                .Where(x => x.Value.Errors.Count > 0)
+                .Select(x => new { x.Key, x.Value.Errors })
+                .ToArray();
+
+            foreach (var error in errors)
+            {
+                foreach (var subError in error.Errors)
+                {
+                    Console.WriteLine($"Property: {error.Key} Error: {subError.ErrorMessage}");
+                }
+            }
+        }
+        return View(bordspellenavond);
+    }
+    
+    catch (Exception ex)
+    {
+        // Log the exception
+        // You could use a logging framework here, like Serilog or NLog
+        Console.WriteLine(ex);
+
+        // Display a general error message
+        ModelState.AddModelError("", "An error occurred while trying to create the game night.");
 
         return View(bordspellenavond);
     }
+}
 // GET: Bordspellenavond/Edit/5
     [HttpGet("edit/{id:int}")]
     [Authorize(policy : "MinimumAge")]
@@ -182,7 +232,9 @@ public class BordspellenavondController : Controller
     public async Task<IActionResult> Edit(int id, Bordspellenavond bordspellenavond, 
         List<int> selectedBordspellen, 
         List<int> selectedDietaryRequirements, 
-        List<int> selectedDrankVoorkeur)
+        List<int> selectedDrankVoorkeur,
+    List<PotluckItem> potluckItems)  
+    
     {
         if (id != bordspellenavond.Id)
         {
@@ -243,6 +295,13 @@ public class BordspellenavondController : Controller
         {
             selectedDietaryRequirements.Add(0); // Replace with your default dietary requirement value
         }
+        
+        // Update PotluckItems
+        existingBordspellenavond.PotluckItems.Clear();
+        foreach (var item in potluckItems)
+        {
+            existingBordspellenavond.PotluckItems.Add(item);
+        }
 
         // Update dietary requirements and drink preferences
         existingBordspellenavond.Dieetwensen = (Dieetwensen)selectedDietaryRequirements
@@ -251,10 +310,15 @@ public class BordspellenavondController : Controller
             .Aggregate(0, (current, drink) => current | drink);
         
         existingBordspellenavond.Is18Plus = existingBordspellenavond.Bordspellen.Any(b => b.Is18Plus);
-
-        await _repo.UpdateAsync(existingBordspellenavond);
+        if (bordspellenavond.IsPotluck)
+        {
+            await _repo.UpdateAsync(existingBordspellenavond);
+            return RedirectToAction("CreatePotluckItem", new { bordspellenavondId = existingBordspellenavond.Id });
+        }
         return RedirectToAction(nameof(Index));
         }
+        await _repo.UpdateAsync(existingBordspellenavond);
+
 
         return View(bordspellenavond);
     }
@@ -477,5 +541,57 @@ public class BordspellenavondController : Controller
                 ModelState.AddModelError("UnsubscriptionError", "Er is een fout opgetreden bij het uitschrijven voor de bordspellenavond.");
                 return View("Error"); // Replace with your error view
             }
+            
         }
-    }
+        [HttpGet("CreatePotluckItem/{bordspellenavondId:int}")]
+        public IActionResult CreatePotluckItem(int bordspellenavondId)
+        {
+            ViewBag.BordspellenavondId = bordspellenavondId;
+            return View();
+        }
+        
+        [HttpPost("CreatePotluckItem/{bordspellenavondId:int}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreatePotluckItem(int bordspellenavondId, PotluckItem potluckItem)
+        {
+            if (ModelState.IsValid)
+            {
+                var bordspellenavond = await _repo.GetByIdAsync(bordspellenavondId);
+                var user = await _userManager.GetUserAsync(User);
+        
+                if (bordspellenavond == null || user == null)
+                {
+                    return NotFound();
+                }
+
+                potluckItem.Bordspellenavond = bordspellenavond;
+                potluckItem.Participant = user;
+
+                bordspellenavond.PotluckItems.Add(potluckItem);
+                await _repo.UpdateAsync(bordspellenavond);
+
+                return RedirectToAction("Details", new { id = bordspellenavondId });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                // ModelState is not valid, let's see why
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Count > 0)
+                    .Select(x => new { x.Key, x.Value.Errors })
+                    .ToArray();
+
+                foreach (var error in errors)
+                {
+                    foreach (var subError in error.Errors)
+                    {
+                        Console.WriteLine($"Property: {error.Key} Error: {subError.ErrorMessage}");
+                    }
+                }
+            }
+
+            ViewBag.BordspellenavondId = bordspellenavondId;
+            return View(potluckItem);
+        }
+        }
+    

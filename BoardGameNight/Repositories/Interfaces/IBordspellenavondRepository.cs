@@ -15,5 +15,6 @@ namespace BoardGameNight.Repositories.Interfaces
         Task<bool> CanUserJoinGameNight(string userId, DateTime gameNightDate);
 
         Task JoinGameNight(int gameNightId, string userId, DateTime gameNightDate);
+        Task AddPotluckItemAsync(PotluckItem item);
     }
 }

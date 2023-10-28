@@ -44,13 +44,19 @@
             <td>@Model.Dieetwensen</td>
             <td>@Model.DrankVoorkeur</td>
             <td>@Model.Deelnemers.Count</td>    
-<td>
-    @foreach (var bordspel in Model.Bordspellen)
-    {
-        <a asp-controller="Bordspel" asp-action="Details" asp-route-id="@bordspel.Id">@bordspel.Naam</a>
-        <br/>
-    }
-</td>
+            <td>
+                @foreach (var bordspel in Model.Bordspellen)
+                {
+                    <a asp-controller="Bordspel" asp-action="Details" asp-route-id="@bordspel.Id">@bordspel.Naam</a>
+                    <br/>
+                }
+            </td>
+            <td>
+                    @foreach (var item in Model.PotluckItems)
+                    {
+                        <li>@item.Name (Contributor: @item.Participant, Dietary Requirements: @item.Dieetwensen)</li>
+                    }
+            </td>
             <!-- Add other properties as needed -->
         </tr>
     </tbody>

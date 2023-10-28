@@ -39,6 +39,9 @@ namespace BoardGameNight.Models
         public ICollection<Bordspellenavond> GeorganiseerdeAvonden { get; set; }
         public ICollection<Bordspellenavond> DeelgenomenAvonden { get; set; }
         public ICollection<Review> Reviews { get; set; }
+        
+        public ICollection<PotluckItem> ContributedPotluckItems { get; set; }
+
         public int GetAge()
         {
             var today = DateTime.Today;

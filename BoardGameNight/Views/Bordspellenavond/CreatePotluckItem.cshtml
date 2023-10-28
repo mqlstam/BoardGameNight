@@ -1,0 +1,36 @@
+@model BoardGameNight.Models.PotluckItem
+@{
+    ViewData["Title"] = "Add Potluck Item";
+    int bordspellenavondId = (int)ViewBag.BordspellenavondId;
+}
+
+<h1>Add Potluck Item</h1>
+
+<form asp-action="CreatePotluckItem" asp-route-bordspellenavondId="@bordspellenavondId" method="post">
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Dieetwensen"></label>
+        <select asp-for="Dieetwensen" class="form-control">
+            @foreach (Dieetwensen dieet in Enum.GetValues(typeof(Dieetwensen)))
+            {
+                <option value="@((int)dieet)">@dieet</option>
+            }
+        </select>
+        <span asp-validation-for="Dieetwensen" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Add</button>
+</form>
+
+<div class="mt-4">
+    <a asp-action="Details" asp-route-id="@bordspellenavondId" class="btn btn-secondary">Back to Bordspellenavond</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
