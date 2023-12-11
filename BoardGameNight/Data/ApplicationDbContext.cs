@@ -18,12 +18,41 @@ namespace BoardGameNight.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(
-                modelBuilder); // This needs to be first, because it creates all ASP.NET Core Identity tables with their relationships.
+            base.OnModelCreating(modelBuilder); // This needs to be first, as it creates all ASP.NET Core Identity tables with their relationships.
 
             modelBuilder.Entity<Bordspel>().ToTable("Bordspel");
             modelBuilder.Entity<Bordspellenavond>().ToTable("Bordspellenavond");
             modelBuilder.Entity<Review>().ToTable("Review");
+            
+            modelBuilder.Entity<BordspelGenre>().HasData(
+                new BordspelGenre { Id = 1, Naam = "Strategie" },
+                new BordspelGenre { Id = 2, Naam = "Familie" },
+                new BordspelGenre { Id = 3, Naam = "Avontuur" },
+                new BordspelGenre { Id = 4, Naam = "Kaartspel" },
+                new BordspelGenre { Id = 5, Naam = "Dobbelspel" },
+                new BordspelGenre { Id = 6, Naam = "Educatief" },
+                new BordspelGenre { Id = 7, Naam = "Fantasie" },
+                new BordspelGenre { Id = 8, Naam = "Party" },
+                new BordspelGenre { Id = 9, Naam = "Puzzel" },
+                new BordspelGenre { Id = 10, Naam = "Sport" }
+                // Voeg eventueel nog meer genres toe
+            );
+
+            
+            modelBuilder.Entity<SoortBordspel>().HasData(
+                new SoortBordspel { Id = 1, Naam = "Abstract Spel" },
+                new SoortBordspel { Id = 2, Naam = "Thematisch Spel" },
+                new SoortBordspel { Id = 3, Naam = "Strategiespel" },
+                new SoortBordspel { Id = 4, Naam = "Familiespel" },
+                new SoortBordspel { Id = 5, Naam = "Kinderspel" },
+                new SoortBordspel { Id = 6, Naam = "Partyspel" },
+                new SoortBordspel { Id = 7, Naam = "Kaartspel" },
+                new SoortBordspel { Id = 8, Naam = "Dobbelspel" },
+                new SoortBordspel { Id = 9, Naam = "Coöperatief Spel" },
+                new SoortBordspel { Id = 10, Naam = "Solo Spel" }
+                // Voeg meer soorten toe zoals gewenst
+            );
+
 
             // Relatie tussen Persoon en Bordspellenavond (Organisator)
             modelBuilder.Entity<Bordspellenavond>()
@@ -84,9 +113,17 @@ namespace BoardGameNight.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(
-                "Server=tcp:boardgamedatabase.database.windows.net,1433;Initial Catalog=BoardGameDatabase;Persist Security Info=False;User ID=lemigie;Password=Mikzakker1;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+            if (!optionsBuilder.IsConfigured)
+            {
+                IConfigurationRoot configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+                var connectionString = configuration.GetConnectionString("DefaultConnection");
+                optionsBuilder.UseSqlServer(connectionString);
+            }
         }
+
 
 
     }

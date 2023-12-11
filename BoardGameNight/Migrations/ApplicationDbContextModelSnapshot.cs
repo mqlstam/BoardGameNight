@@ -198,7 +198,7 @@ namespace BoardGameNight.Migrations
                     b.Property<int>("BordspellenavondId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Dieetwensen")
+                    b.Property<int?>("Dieetwensen")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -207,7 +207,6 @@ namespace BoardGameNight.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("ParticipantId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -266,6 +265,58 @@ namespace BoardGameNight.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("BordspelGenres");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Naam = "Strategie"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Naam = "Familie"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Naam = "Avontuur"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Naam = "Kaartspel"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Naam = "Dobbelspel"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Naam = "Educatief"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Naam = "Fantasie"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Naam = "Party"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Naam = "Puzzel"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Naam = "Sport"
+                        });
                 });
 
             modelBuilder.Entity("BordspellenavondBordspel", b =>
@@ -451,6 +502,58 @@ namespace BoardGameNight.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("SoortBordspellen");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Naam = "Abstract Spel"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Naam = "Thematisch Spel"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Naam = "Strategiespel"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Naam = "Familiespel"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Naam = "Kinderspel"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Naam = "Partyspel"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Naam = "Kaartspel"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Naam = "Dobbelspel"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Naam = "Coöperatief Spel"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Naam = "Solo Spel"
+                        });
                 });
 
             modelBuilder.Entity("BoardGameNight.Models.Bordspel", b =>
@@ -491,9 +594,7 @@ namespace BoardGameNight.Migrations
 
                     b.HasOne("BoardGameNight.Models.Persoon", "Participant")
                         .WithMany("ContributedPotluckItems")
-                        .HasForeignKey("ParticipantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ParticipantId");
 
                     b.Navigation("Bordspellenavond");
 
