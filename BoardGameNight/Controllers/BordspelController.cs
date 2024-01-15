@@ -83,25 +83,22 @@ public class BordspelController : Controller
         {
             try
             {
-                // Load the existing entity from the database
                 var existingBordspel = await _bordspelRepository.GetByIdAsync(id);
-
                 if (existingBordspel == null)
                 {
                     return NotFound();
                 }
 
-                // Update only the fields that are being edited
                 existingBordspel.Naam = bordspel.Naam;
                 existingBordspel.Beschrijving = bordspel.Beschrijving;
-                existingBordspel.Genre = bordspel.Genre;
+                existingBordspel.GenreId = bordspel.GenreId; // Update GenreId
+                existingBordspel.SoortSpelId = bordspel.SoortSpelId; // Update SoortSpelId
                 existingBordspel.Is18Plus = bordspel.Is18Plus;
-                existingBordspel.SoortSpel = bordspel.SoortSpel;
 
-                // Only upload new image if a file has been provided
+                // Handle image upload
                 if (foto != null && foto.Length > 0)
                 {
-                    var fotoUrl = await _blobStorageService.UploadImage(foto, "imagesbordspellen");
+                    var fotoUrl = await _blobStorageService.UploadImage(foto);
                     existingBordspel.FotoUrl = fotoUrl;
                 }
 
@@ -110,19 +107,15 @@ public class BordspelController : Controller
             }
             catch (Exception ex)
             {
-                // Log the exception
                 _logger.LogError(ex, "Error updating bordspel");
             }
         }
 
-        var errors = ModelState.Values.SelectMany(v => v.Errors);
-        foreach (var error in errors)
-        {
-            _logger.LogError("Model validation error: {0}", error.ErrorMessage);
-        }
-
+        ViewBag.Genres = await _bordspelGenreRepository.GetAllAsync();
+        ViewBag.Soorten = await _soortBordspelRepository.GetAllAsync();
         return View(bordspel);
     }
+
 
     // GET: Bordspel/Create
     [HttpGet("create")]
@@ -150,7 +143,7 @@ public class BordspelController : Controller
                     return View(bordspel);
                 }
 
-                var fotoUrl = await _blobStorageService.UploadImage(foto, "imagesbordspellen");
+                var fotoUrl = await _blobStorageService.UploadImage(foto);
                 bordspel.FotoUrl = fotoUrl;
 
                 // Get genre 
@@ -209,7 +202,7 @@ public class BordspelController : Controller
         return View(bordspel);
     }
 
-    [HttpPost, ActionName("Delete")]
+    [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {

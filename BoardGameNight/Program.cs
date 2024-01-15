@@ -29,6 +29,7 @@ builder.Services.AddScoped<IBordspelGenreRepository, BordspelGenreRepository>();
 builder.Services.AddScoped<ISoortBordspelRepository, SoortBordspelRepository>();
 builder.Services.AddScoped<IBordspellenavondRepository, BordspellenavondRepository>();
 builder.Services.AddScoped<BlobStorageService>();
+builder.Services.AddScoped<LocalFileStorageService>();
 builder.Services.Configure<BlobStorageSettings>(builder.Configuration.GetSection("BlobStorageSettings"));
 
 

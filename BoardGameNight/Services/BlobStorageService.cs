@@ -1,36 +1,36 @@
-using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
-using BoardGameNight.Configurations;
-using Microsoft.Extensions.Options;
+// BoardGameNight/Services/BlobStorageService.cs
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace BoardGameNight.Services;
 
 public class BlobStorageService
 {
-    private readonly BlobServiceClient _blobServiceClient;
+    private readonly string _storagePath;
     private readonly ILogger<BlobStorageService> _logger;
 
-    public BlobStorageService(IOptions<BlobStorageSettings> blobStorageSettings, ILogger<BlobStorageService> logger)
+    public BlobStorageService(IWebHostEnvironment env, ILogger<BlobStorageService> logger)
     {
         _logger = logger;
+        _storagePath = Path.Combine(env.WebRootPath, "images"); // Folder for images in wwwroot
 
-        try
+        // Ensure the storage directory exists
+        if (!Directory.Exists(_storagePath))
         {
-            _blobServiceClient = new BlobServiceClient(blobStorageSettings.Value.ConnectionString);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Error connecting to blob storage with connection string: {blobStorageSettings.Value.ConnectionString}");
-            throw;
+            Directory.CreateDirectory(_storagePath);
         }
     }
-    public async Task<string> UploadImage(IFormFile image, string containerName)
+
+    public async Task<string> UploadImage(IFormFile image)
     {
         if (image == null || image.Length == 0)
         {
-            _logger.LogError("Uploaded file is null or empty.");
             throw new ArgumentException("File cannot be null or empty.", nameof(image));
         }
+
 
         // image content type validation
         string[] permittedTypes = { "image/jpeg", "image/png", "image/gif" };
@@ -48,28 +48,21 @@ public class BlobStorageService
             throw new ArgumentException("Image size is too large.", nameof(image.Length));
         }
 
+        string filePath = Path.Combine(_storagePath, image.FileName);
+        
         try
         {
-            var containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
-
-            if (containerClient == null)
+            using (var stream = new FileStream(filePath, FileMode.Create))
             {
-                _logger.LogError($"Container client could not be created for container: {containerName}");
-                throw new Exception($"Container client could not be created for container: {containerName}");
+                await image.CopyToAsync(stream);
             }
 
-            var blobClient = containerClient.GetBlobClient(image.FileName);
-
-            using (var stream = image.OpenReadStream())
-            {
-                await blobClient.UploadAsync(stream, new BlobHttpHeaders { ContentType = image.ContentType });
-            }
-
-            return blobClient.Uri.AbsoluteUri;
+            // Return a relative URL to the file
+            return $"/images/{image.FileName}";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error uploading image to blob storage for container: {containerName}");
+            _logger.LogError(ex, "Error uploading image to local storage");
             throw;
         }
     }
