@@ -26,7 +26,7 @@ jobs:
         run: dotnet build --configuration Release
 
       - name: Run tests
-        run: dotnet test ./Bordspellenapptest.csproj --configuration Release --no-build
+        run: dotnet test ./Bordspellenapptest/Bordspellenapptest.csproj --configuration Release --no-build
 
       - name: dotnet publish
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
