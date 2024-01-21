@@ -1,3 +1,5 @@
+// BoardGameNight/Program.cs
+
 using System.Reflection;
 using BoardGameNight;
 using BoardGameNight.Configurations;
@@ -9,6 +11,7 @@ using BoardGameNight.Repositories.Implementations;
 using BoardGameNight.Repositories.Interfaces;
 using BoardGameNight.Services;
 using GraphQL;
+using GraphQL.Client.Http;
 using GraphQL.MicrosoftDI;
 using GraphQL.Server;
 using GraphQL.Types;
@@ -22,7 +25,6 @@ using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using Newtonsoft.Json;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Enable synchronous IO
@@ -35,6 +37,7 @@ builder.Services.Configure<IISServerOptions>(options =>
 {
     options.AllowSynchronousIO = true;
 });
+
 // Add services to the container.
 builder.Services.AddAuthorization(options =>
 {
@@ -71,9 +74,16 @@ builder.Services.AddDefaultIdentity<Persoon>()
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Board Game Night API", Version = "v1" });
+
+    // Define the GraphQL endpoint in Swagger
+    c.AddServer(new OpenApiServer() { Url = "/graphql" });
+
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     c.IncludeXmlComments(xmlPath);
+
+    // Configure Swagger to include the GraphQL endpoint
+    c.MapType<GraphQLHttpRequest>(() => new OpenApiSchema { Type = "object" });
 });
 
 // GraphQL
@@ -99,7 +109,9 @@ if (!app.Environment.IsDevelopment())
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "BoardGameNight API V1");
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Board Game Night API V1");
+    // Add the GraphQL endpoint to the Swagger UI
+    c.SwaggerEndpoint("/graphql", "GraphQL API");
 });
 
 app.UseHttpsRedirection();

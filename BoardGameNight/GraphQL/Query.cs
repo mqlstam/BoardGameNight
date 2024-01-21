@@ -1,3 +1,4 @@
+// BoardGameNight/GraphQL/Query.cs
 using BoardGameNight.Repositories.Implementations;
 using GraphQL.Types;
 using BoardGameNight.Repositories.Interfaces;
