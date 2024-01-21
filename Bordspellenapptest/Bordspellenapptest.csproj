@@ -21,6 +21,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\..\..\..\..\SSWF Individueel\BoardGameNight\BoardGameNight\BoardGameNight.csproj" />
+      <ProjectReference Include="..\BoardGameNight\BoardGameNight.csproj" />
     </ItemGroup>
 
 </Project>
