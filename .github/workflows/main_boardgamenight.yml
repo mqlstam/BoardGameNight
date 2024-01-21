@@ -1,4 +1,4 @@
-name: Build and deploy ASP.Net Core app to Azure Web App - BoardGameNight
+name: Build, Test, and deploy ASP.Net Core app to Azure Web App - BoardGameNight
 
 on:
   push:
@@ -7,15 +7,14 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build_and_test:
     runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v2
       
       - name: Print directory structure
-        run: |
-          cmd /c "dir /s"
+        run: cmd /c "dir /s"
 
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v1
@@ -25,6 +24,9 @@ jobs:
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
+
+      - name: Run tests
+        run: dotnet test --configuration Release --no-build
 
       - name: dotnet publish
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
@@ -37,7 +39,7 @@ jobs:
 
   deploy:
     runs-on: windows-latest
-    needs: build
+    needs: build_and_test
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
