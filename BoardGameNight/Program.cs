@@ -87,7 +87,6 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // GraphQL
-// GraphQL
 builder.Services.AddScoped<BordspelType>();
 builder.Services.AddScoped<BordspellenavondType>();
 builder.Services.AddScoped<ISchema, BordspelSchema>(services => new BordspelSchema(new SelfActivatingServiceProvider(services)));
