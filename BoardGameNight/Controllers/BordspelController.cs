@@ -33,12 +33,22 @@ public class BordspelController : Controller
 
 
     // GET: Bordspel
+    /// <summary>
+    /// Retrieves all board games.
+    /// </summary>
+    /// <returns>A list of all board games.</returns>
+    [HttpGet]
     public async Task<IActionResult> Index()
     {
         return View(await _bordspelRepository.GetAllAsync());
     }
 
     // GET: Bordspel/Details/5
+    /// <summary>
+    /// Retrieves the details of a specific board game by ID.
+    /// </summary>
+    /// <param name="id">The ID of the board game to retrieve.</param>
+    /// <returns>The details of the board game if found; otherwise, NotFound.</returns>
     [HttpGet("details/{id:int}")]
     public async Task<IActionResult> Details(int? id)
     {
@@ -53,6 +63,11 @@ public class BordspelController : Controller
     }
 
     // GET: Bordspel/Edit/5
+    /// <summary>
+    /// Presents the form for editing a board game.
+    /// </summary>
+    /// <param name="id">The ID of the board game to edit.</param>
+    /// <returns>The edit view for the board game if found; otherwise, NotFound.</returns>
     [HttpGet("edit/{id:int}")]
     public async Task<IActionResult> Edit(int? id)
     {
@@ -69,7 +84,14 @@ public class BordspelController : Controller
         return View(bordspel);
     }
 
-
+    // POST: Bordspel/Edit/5
+    /// <summary>
+    /// Processes the submitted form for editing a board game.
+    /// </summary>
+    /// <param name="id">The ID of the board game to edit.</param>
+    /// <param name="bordspel">The board game object with updated information.</param>
+    /// <param name="foto">The new photo for the board game if provided.</param>
+    /// <returns>Redirects to the index action if successful; otherwise, returns the edit view with validation errors.</returns>
     [HttpPost("edit/{id:int}")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, Bordspel bordspel, IFormFile foto = null)
@@ -118,6 +140,10 @@ public class BordspelController : Controller
 
 
     // GET: Bordspel/Create
+    /// <summary>
+    /// Presents the form for creating a new board game.
+    /// </summary>
+    /// <returns>The create view.</returns>
     [HttpGet("create")]
     public async Task<IActionResult> Create()
     {
@@ -129,6 +155,12 @@ public class BordspelController : Controller
 
 
     // POST: Bordspel/Create
+    /// <summary>
+    /// Processes the submitted form for creating a new board game.
+    /// </summary>
+    /// <param name="bordspel">The new board game object to create.</param>
+    /// <param name="foto">The photo for the new board game.</param>
+    /// <returns>Redirects to the index action if successful; otherwise, returns the create view with validation errors.</returns>
     [HttpPost("create")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Bordspel bordspel, IFormFile foto)
@@ -185,6 +217,11 @@ public class BordspelController : Controller
     }
 
     // GET: Bordspel/Delete/5
+    /// <summary>
+    /// Presents the confirmation page for deleting a board game.
+    /// </summary>
+    /// <param name="id">The ID of the board game to delete.</param>
+    /// <returns>The delete confirmation view if found; otherwise, NotFound.</returns>
     [HttpGet("delete/{id:int}")]
     public async Task<IActionResult> Delete(int? id)
     {
@@ -202,6 +239,12 @@ public class BordspelController : Controller
         return View(bordspel);
     }
 
+    // POST: Bordspel/Delete/5
+    /// <summary>
+    /// Deletes the board game with the specified ID after confirmation.
+    /// </summary>
+    /// <param name="id">The ID of the board game to delete.</param>
+    /// <returns>Redirects to the index action if successful; otherwise, returns an error message.</returns>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)

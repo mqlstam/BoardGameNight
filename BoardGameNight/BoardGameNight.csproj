@@ -4,10 +4,17 @@
         <TargetFramework>net7.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+      <GenerateDocumentationFile>true</GenerateDocumentationFile>
+      <NoWarn>$(NoWarn);1591</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="Azure.Storage.Blobs" Version="12.18.0" />
+      <PackageReference Include="GraphQL.Client" Version="6.0.2" />
+      <PackageReference Include="GraphQL.NewtonsoftJson" Version="7.7.2" />
+      <PackageReference Include="GraphQL.Server" Version="1.7.0.1" />
+      <PackageReference Include="GraphQL.Server.All" Version="7.6.0" />
+      <PackageReference Include="GraphQL.SystemTextJson" Version="7.7.2" />
       <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.11" />
       <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.11" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.11" />
@@ -22,6 +29,8 @@
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
       <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.10" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+      <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     </ItemGroup>
 
     <ItemGroup>

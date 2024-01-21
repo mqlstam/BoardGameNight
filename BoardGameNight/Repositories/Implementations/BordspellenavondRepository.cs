@@ -114,4 +114,11 @@ public class BordspellenavondRepository : IBordspellenavondRepository
 
         await UpdateAsync(bordspellenavond);
     }
+    
+    public async Task<List<Bordspellenavond>> GetUserSubscriptions(string userId)
+    {
+        return await _context.Bordspellenavonden
+            .Where(b => b.Deelnemers.Any(d => d.Id == userId))
+            .ToListAsync();
+    }
 }
