@@ -1,5 +1,6 @@
-using BoardGameNight.Models;
+// BoardGameNight/Repositories/Interfaces/IBordspellenavondRepository.cs
 
+using BoardGameNight.Models;
 namespace BoardGameNight.Repositories.Interfaces
 {
     public interface IBordspellenavondRepository

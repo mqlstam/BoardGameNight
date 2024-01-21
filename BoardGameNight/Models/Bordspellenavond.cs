@@ -1,3 +1,5 @@
+// BoardGameNight/Models/Bordspellenavond.cs
+
 using System.ComponentModel.DataAnnotations;
 using BoardGameNight.Attributes;
 
