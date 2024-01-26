@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Builder;
+
 
 
 
@@ -22,8 +24,7 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddScoped<IAuthorizationHandler, MinimumAgeHandler>();
 
-
-// Add services to the container.
+// Add services to the container
 builder.Services.AddScoped<IBordspelRepository, BordspelRepository>();
 builder.Services.AddScoped<IBordspelGenreRepository, BordspelGenreRepository>();
 builder.Services.AddScoped<ISoortBordspelRepository, SoortBordspelRepository>();
