@@ -12,6 +12,43 @@
         </div>
 
 }
+<style>body {
+           background-image: url('https://images.squarespace-cdn.com/content/v1/5f4a21f48109a775b6cc05e2/1647265794696-5A3X0CAAX6XBWSU9WKEE/ADXY4868.JPEG');
+           background-size: cover;
+           background-position: center;
+           background-repeat: no-repeat;
+           color: white; /* Make all text color white */
+       }
+       
+       .btn-primary {
+           background-color: #8fabd1 !important;
+           border-color: #8fabd1;
+           color: white !important; /* Ensuring the text on buttons is also white */
+       }
+       
+       a, a:visited, a:hover, a:focus, a:active {
+           color: black;
+       }
+       
+       h1, p {
+           text-shadow: 2px 2px 4px #000000;
+       }
+       
+/* Specific styles for navbar */
+.navbar {
+    background-color: #333; /* Example background color for the navbar */
+    color: black; /* Default text color for the navbar */
+}
+
+/* If your navbar text is within elements like <a>, <span>, <p>, etc. */
+.navbar a, .navbar a:visited, .navbar a:hover, .navbar a:focus, .navbar a:active {
+    color: black; /* Overriding the color for all states of link text */
+}
+
+/* If the navbar has specific classes for text, target them as well */
+.navbar-text {
+    color: black; /* Overriding the color for navbar text elements */
+}</style>
 
 @if(TempData["AllergyWarning"] != null) {
 
